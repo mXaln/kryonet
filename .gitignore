@@ -7,3 +7,6 @@ bin/
 target/
 .idea/
 *.iml
+local.properties
+build/
+.gradle

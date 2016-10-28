@@ -19,6 +19,9 @@
 
 package com.esotericsoftware.kryonet;
 
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryonet.FrameworkMessage.Ping;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Socket;
@@ -26,10 +29,14 @@ import java.net.SocketAddress;
 import java.net.SocketException;
 import java.nio.channels.SocketChannel;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryonet.FrameworkMessage.Ping;
-
-import static com.esotericsoftware.minlog.Log.*;
+import static com.esotericsoftware.minlog.Log.DEBUG;
+import static com.esotericsoftware.minlog.Log.ERROR;
+import static com.esotericsoftware.minlog.Log.INFO;
+import static com.esotericsoftware.minlog.Log.TRACE;
+import static com.esotericsoftware.minlog.Log.debug;
+import static com.esotericsoftware.minlog.Log.error;
+import static com.esotericsoftware.minlog.Log.info;
+import static com.esotericsoftware.minlog.Log.trace;
 
 // BOZO - Layer to handle handshake state.
 
@@ -50,6 +57,7 @@ public class Connection {
 	private int returnTripTime;
 	volatile boolean isConnected;
 	volatile KryoNetException lastProtocolError;
+	private Object arbitraryData;
 
 	protected Connection () {
 	}
@@ -336,5 +344,15 @@ public class Connection {
 	void setConnected (boolean isConnected) {
 		this.isConnected = isConnected;
 		if (isConnected && name == null) name = "Connection " + id;
+	}
+
+	public Object getArbitraryData()
+	{
+		return arbitraryData;
+	}
+
+	public void setArbitraryData(Object arbitraryData)
+	{
+		this.arbitraryData = arbitraryData;
 	}
 }
