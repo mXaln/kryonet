@@ -19,43 +19,65 @@
 
 package com.esotericsoftware.kryonet;
 
-import java.io.IOException;
-
 import com.esotericsoftware.kryo.Kryo;
 
-/** Represents the local end point of a connection.
- * @author Nathan Sweet <misc@n4te.com> */
-public interface EndPoint extends Runnable {
-	/** Gets the serialization instance that will be used to serialize and deserialize objects. */
-	public Serialization getSerialization ();
+import java.io.IOException;
 
-	/** If the listener already exists, it is not added again. */
-	public void addListener (Listener listener);
+/**
+ * Represents the local end point of a connection.
+ *
+ * @author Nathan Sweet <misc@n4te.com>
+ */
+public interface EndPoint extends Runnable
+{
+    /**
+     * Gets the serialization instance that will be used to serialize and deserialize objects.
+     */
+    public Serialization getSerialization();
 
-	public void removeListener (Listener listener);
+    /**
+     * If the listener already exists, it is not added again.
+     */
+    public void addListener(Listener listener);
 
-	/** Continually updates this end point until {@link #stop()} is called. */
-	public void run ();
+    public void removeListener(Listener listener);
 
-	/** Starts a new thread that calls {@link #run()}. */
-	public void start ();
+    /**
+     * Continually updates this end point until {@link #stop()} is called.
+     */
+    public void run();
 
-	/** Closes this end point and causes {@link #run()} to return. */
-	public void stop ();
+    /**
+     * Starts a new thread that calls {@link #run()}.
+     */
+    public void start();
 
-	/** @see Client
-	 * @see Server */
-	public void close ();
+    /**
+     * Closes this end point and causes {@link #run()} to return.
+     */
+    public void stop();
 
-	/** @see Client#update(int)
-	 * @see Server#update(int) */
-	public void update (int timeout) throws IOException;
+    /**
+     * @see Client
+     * @see Server
+     */
+    public void close();
 
-	/** Returns the last thread that called {@link #update(int)} for this end point. This can be useful to detect when long running
-	 * code will be run on the update thread. */
-	public Thread getUpdateThread ();
+    /**
+     * @see Client#update(int)
+     * @see Server#update(int)
+     */
+    public void update(int timeout) throws IOException;
 
-	/** Gets the Kryo instance that will be used to serialize and deserialize objects. This is only valid if
-	 * {@link KryoSerialization} is being used, which is the default. */
-	public Kryo getKryo ();
+    /**
+     * Returns the last thread that called {@link #update(int)} for this end point. This can be useful to detect when long running
+     * code will be run on the update thread.
+     */
+    public Thread getUpdateThread();
+
+    /**
+     * Gets the Kryo instance that will be used to serialize and deserialize objects. This is only valid if
+     * {@link KryoSerialization} is being used, which is the default.
+     */
+    public Kryo getKryo();
 }

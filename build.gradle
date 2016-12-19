@@ -4,7 +4,7 @@ plugins {
     id 'signing'
 }
 
-group 'com.skynetsoftware'
+group 'org.skynetsoftware'
 version '3.0.0'
 
 sourceCompatibility = 1.7
