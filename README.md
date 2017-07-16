@@ -9,6 +9,7 @@ This fork was specifically made for [ProjectGG](https://github.com/Meidimax99/Pr
 * Listener is now a interface ([#39](https://github.com/EsotericSoftware/kryonet/issues/39))
 * Uses kryo 4.0.0 ([#77](https://github.com/EsotericSoftware/kryonet/issues/77))
 * Fixes for the Android 5 and iOS crashes ([#106](https://github.com/EsotericSoftware/kryonet/issues/106))
+* Kryonet now uses a gradle setup
 
 ### Usage of the changes
 
@@ -27,4 +28,22 @@ typeListener.addTypeHandler(SomeOtherRequest.class,
 });
 
 server.addListener(typeListener);
+```
+
+## Download
+
+The download is available on the [releases](https://github.com/crykn/kryonet/releases) page. You can also use [jitpack.io](https://jitpack.io/#crykn/kryonet/).
+
+An example for gradle:
+```
+allprojects {
+   repositories {
+      ...
+      maven { url 'https://jitpack.io' }
+   }
+}
+	
+dependencies {
+   compile 'com.github.crykn:kryonet:2.22'
+}
 ```
