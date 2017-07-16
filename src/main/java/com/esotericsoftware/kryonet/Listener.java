@@ -19,19 +19,13 @@
 
 package com.esotericsoftware.kryonet;
 
-import static com.esotericsoftware.minlog.Log.DEBUG;
-import static com.esotericsoftware.minlog.Log.ERROR;
-import static com.esotericsoftware.minlog.Log.debug;
-import static com.esotericsoftware.minlog.Log.error;
-
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import java.util.function.BiConsumer;
 
 /**
  * Used to be notified about connection events.
@@ -72,57 +66,42 @@ public class Listener {
 	}
 
 	/**
-	 * Uses reflection to called "received(Connection, XXX)" on the listener,
-	 * where XXX is the received object type. Note this class uses a HashMap
-	 * lookup and (cached) reflection, so is not as efficient as writing a
-	 * series of "instanceof" statements.
+	 * A type listener for kryonet. Note this class uses a HashMap lookup, so is
+	 * not as efficient as writing a series of "instanceof" statements.
+	 * <p>
+	 * Add a handler for a specific type via
+	 * {@link #addHandler(Class, BiConsumer)}.
 	 */
-	static public class ReflectionListener extends Listener {
-		private final HashMap<Class, Method> classToMethod = new HashMap();
+	public class TypeListener extends Listener {
 
-		public void received(Connection connection, Object object) {
-			Class type = object.getClass();
-			Method method = classToMethod.get(type);
-			if (method == null) {
-				if (classToMethod.containsKey(type))
-					return; // Only fail on the first attempt to find the
-							// method.
-				try {
-					method = getClass().getMethod("received",
-							new Class[]{Connection.class, type});
-					method.setAccessible(true);
-				} catch (SecurityException ex) {
-					if (ERROR)
-						error("kryonet",
-								"Unable to access method: received(Connection, "
-										+ type.getName() + ")",
-								ex);
-					return;
-				} catch (NoSuchMethodException ex) {
-					if (DEBUG)
-						debug("kryonet",
-								"Unable to find listener method: "
-										+ getClass().getName()
-										+ "#received(Connection, "
-										+ type.getName() + ")");
-					return;
-				} finally {
-					classToMethod.put(type, method);
-				}
-			}
-			try {
-				method.invoke(this, connection, object);
-			} catch (Throwable ex) {
-				if (ex instanceof InvocationTargetException
-						&& ex.getCause() != null)
-					ex = ex.getCause();
-				if (ex instanceof RuntimeException)
-					throw (RuntimeException) ex;
-				throw new RuntimeException("Error invoking method: "
-						+ getClass().getName() + "#received(Connection, "
-						+ type.getName() + ")", ex);
+		/**
+		 * All type listeners.
+		 */
+		private final HashMap<Class<?>, BiConsumer> listeners = new HashMap<>();
+
+		public TypeListener() {
+		}
+
+		@Override
+		public void received(Connection con, Object msg) {
+			if (listeners.containsKey(msg.getClass())) {
+				listeners.get(msg.getClass()).accept(con, msg);
 			}
 		}
+
+		/**
+		 * Adds a handler for a specific type.
+		 * 
+		 * @param clazz
+		 *            The class of the type.
+		 * @param listener
+		 *            The listener.
+		 */
+		public <T> void addTypeHandler(Class<T> clazz,
+				BiConsumer<? super Connection, ? super T> listener) {
+			listeners.put(clazz, listener);
+		}
+
 	}
 
 	/**
