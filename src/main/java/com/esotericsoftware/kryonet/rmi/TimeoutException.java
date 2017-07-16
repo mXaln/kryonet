@@ -20,31 +20,28 @@
 package com.esotericsoftware.kryonet.rmi;
 
 /**
- * Thrown when a method with a return value is invoked on a remote object and the response is not received with the
+ * Thrown when a method with a return value is invoked on a remote object and
+ * the response is not received with the
  * {@link RemoteObject#setResponseTimeout(int) response timeout}.
  *
  * @author Nathan Sweet <misc@n4te.com>
- * @see ObjectSpace#getRemoteObject(com.esotericsoftware.kryonet.Connection, int, Class...)
+ * @see ObjectSpace#getRemoteObject(com.esotericsoftware.kryonet.Connection,
+ *      int, Class...)
  */
-public class TimeoutException extends RuntimeException
-{
-    public TimeoutException()
-    {
-        super();
-    }
+public class TimeoutException extends RuntimeException {
+	public TimeoutException() {
+		super();
+	}
 
-    public TimeoutException(String message, Throwable cause)
-    {
-        super(message, cause);
-    }
+	public TimeoutException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-    public TimeoutException(String message)
-    {
-        super(message);
-    }
+	public TimeoutException(String message) {
+		super(message);
+	}
 
-    public TimeoutException(Throwable cause)
-    {
-        super(cause);
-    }
+	public TimeoutException(Throwable cause) {
+		super(cause);
+	}
 }
