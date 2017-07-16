@@ -30,7 +30,7 @@ import java.util.function.BiConsumer;
 /**
  * Used to be notified about connection events.
  */
-public class Listener {
+public interface Listener {
 	/**
 	 * Called when the remote end has been connected. This will be invoked
 	 * before any objects are received by {@link #received(Connection, Object)}.
@@ -38,15 +38,13 @@ public class Listener {
 	 * {@link Server#update(int)}. This method should not block for long periods
 	 * as other network activity will not be processed until it returns.
 	 */
-	public void connected(Connection connection) {
-	}
+	public void connected(Connection connection);
 
 	/**
 	 * Called when the remote end is no longer connected. There is no guarantee
 	 * as to what thread will invoke this method.
 	 */
-	public void disconnected(Connection connection) {
-	}
+	public void disconnected(Connection connection);
 
 	/**
 	 * Called when an object has been received from the remote end of the
@@ -55,14 +53,36 @@ public class Listener {
 	 * should not block for long periods as other network activity will not be
 	 * processed until it returns.
 	 */
-	public void received(Connection connection, Object object) {
-	}
+	public void received(Connection connection, Object object);
 
 	/**
 	 * Called when the connection is below the
 	 * {@link Connection#setIdleThreshold(float) idle threshold}.
 	 */
-	public void idle(Connection connection) {
+	public void idle(Connection connection);
+
+	/**
+	 * Wraps the listener interface and implements
+	 * {@link Listener#idle(Connection)} and
+	 * {@link Listener#received(Connection, Object)}.
+	 *
+	 */
+	public abstract class ConnectionListener implements Listener {
+
+		@Override
+		public abstract void disconnected(Connection arg0);
+
+		@Override
+		public abstract void connected(Connection arg0);
+
+		@Override
+		public void received(Connection connection, Object object) {
+		}
+
+		@Override
+		public void idle(Connection connection) {
+		}
+
 	}
 
 	/**
@@ -72,7 +92,7 @@ public class Listener {
 	 * Add a handler for a specific type via
 	 * {@link #addHandler(Class, BiConsumer)}.
 	 */
-	public class TypeListener extends Listener {
+	static public class TypeListener implements Listener {
 
 		/**
 		 * All type listeners.
@@ -102,6 +122,18 @@ public class Listener {
 			listeners.put(clazz, listener);
 		}
 
+		@Override
+		public void connected(Connection connection) {
+		}
+
+		@Override
+		public void disconnected(Connection connection) {
+		}
+
+		@Override
+		public void idle(Connection connection) {
+		}
+
 	}
 
 	/**
@@ -109,7 +141,7 @@ public class Listener {
 	 * This allows the runnables to be processed on a different thread,
 	 * preventing the connection's update thread from being blocked.
 	 */
-	static public abstract class QueuedListener extends Listener {
+	static public abstract class QueuedListener implements Listener {
 		final Listener listener;
 
 		public QueuedListener(Listener listener) {

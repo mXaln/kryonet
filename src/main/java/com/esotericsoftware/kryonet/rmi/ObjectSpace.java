@@ -126,6 +126,14 @@ public class ObjectSpace {
 		public void disconnected(Connection connection) {
 			removeConnection(connection);
 		}
+
+		@Override
+		public void connected(Connection connection) {
+		}
+
+		@Override
+		public void idle(Connection connection) {
+		}
 	};
 
 	/**
@@ -449,6 +457,14 @@ public class ObjectSpace {
 
 				public void disconnected(Connection connection) {
 					close();
+				}
+
+				@Override
+				public void connected(Connection connection) {
+				}
+
+				@Override
+				public void idle(Connection connection) {
 				}
 			};
 			connection.addListener(responseListener);

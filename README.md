@@ -2,28 +2,29 @@
 
 A fork of [kryonet](https://github.com/EsotericSoftware/kryonet/), a Java library that provides a clean and simple API for efficient network communication.
 
-This fork was specifically made for [ProjectGG]() and adds only a few small improvements.
+This fork was specifically made for [ProjectGG](https://github.com/Meidimax99/ProjektGG) but also adds the most demanded features on kryonet's issue tracker.
 
 ### Key Changes
 * A TypeListener for easier message handling (see the example below)
-* Fixes for the Android 5 and iOS crashes
+* Listener is now a interface ([#39](https://github.com/EsotericSoftware/kryonet/issues/39))
+* Uses kryo 4.0.0 ([#77](https://github.com/EsotericSoftware/kryonet/issues/77))
+* Fixes for the Android 5 and iOS crashes ([#106](https://github.com/EsotericSoftware/kryonet/issues/106))
 
 ### Usage of the changes
 
 This code adds a listener to handle receiving objects:
 
 ```java
-        TypeListener typeListener = new TypeListener();
+TypeListener typeListener = new TypeListener();
         
-		typeListener.addTypeHandler(SomeRequest.class,
-				(con, msg) -> {
-					System.out.println(msg.getSomeData());
-				});
-		typeListener.addTypeHandler(SomeOtherRequest.class,
-				(con, msg) -> {
-					con.sendTCP(new SomeResponse());
-				});
+typeListener.addTypeHandler(SomeRequest.class,
+   (con, msg) -> {
+      System.out.println(msg.getSomeData());
+   });
+typeListener.addTypeHandler(SomeOtherRequest.class,
+   (con, msg) -> {
+      con.sendTCP(new SomeResponse());
+});
 
-		server.addListener(typeListener);
-    });
+server.addListener(typeListener);
 ```

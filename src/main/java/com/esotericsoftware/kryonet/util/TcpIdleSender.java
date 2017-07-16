@@ -22,7 +22,7 @@ package com.esotericsoftware.kryonet.util;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 
-abstract public class TcpIdleSender extends Listener {
+abstract public class TcpIdleSender implements Listener {
 	boolean started;
 
 	public void idle(Connection connection) {
