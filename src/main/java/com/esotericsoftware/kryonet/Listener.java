@@ -38,13 +38,15 @@ public interface Listener {
 	 * {@link Server#update(int)}. This method should not block for long periods
 	 * as other network activity will not be processed until it returns.
 	 */
-	public void connected(Connection connection);
+	public default void connected(Connection connection) {
+	}
 
 	/**
 	 * Called when the remote end is no longer connected. There is no guarantee
 	 * as to what thread will invoke this method.
 	 */
-	public void disconnected(Connection connection);
+	public default void disconnected(Connection connection) {
+	}
 
 	/**
 	 * Called when an object has been received from the remote end of the
@@ -53,13 +55,15 @@ public interface Listener {
 	 * should not block for long periods as other network activity will not be
 	 * processed until it returns.
 	 */
-	public void received(Connection connection, Object object);
+	public default void received(Connection connection, Object object) {
+	}
 
 	/**
 	 * Called when the connection is below the
 	 * {@link Connection#setIdleThreshold(float) idle threshold}.
 	 */
-	public void idle(Connection connection);
+	public default void idle(Connection connection) {
+	}
 
 	/**
 	 * Wraps the listener interface and implements
@@ -121,19 +125,7 @@ public interface Listener {
 				BiConsumer<? super Connection, ? super T> listener) {
 			listeners.put(clazz, listener);
 		}
-
-		@Override
-		public void connected(Connection connection) {
-		}
-
-		@Override
-		public void disconnected(Connection connection) {
-		}
-
-		@Override
-		public void idle(Connection connection) {
-		}
-
+		
 	}
 
 	/**
