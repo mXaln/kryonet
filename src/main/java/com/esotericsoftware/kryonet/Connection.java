@@ -265,7 +265,11 @@ public class Connection {
 	}
 
 	/**
-	 * If the listener already exists, it is not added again.
+	 * Adds a listener to the connection. If the listener already exists, it is
+	 * not added again.
+	 * 
+	 * @param listener
+	 *            The listener to add.
 	 */
 	public void addListener(Listener listener) {
 		if (listener == null)

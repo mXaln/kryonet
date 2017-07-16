@@ -10,6 +10,7 @@ This fork was specifically made for [ProjectGG](https://github.com/Meidimax99/Pr
 * Uses kryo 4.0.0 ([#77](https://github.com/EsotericSoftware/kryonet/issues/77))
 * Fixes for the Android 5 and iOS crashes ([#106](https://github.com/EsotericSoftware/kryonet/issues/106))
 * Kryonet now uses a gradle setup
+* A few improvements to the documentation ([#44](https://github.com/EsotericSoftware/kryonet/issues/44), [#35](https://github.com/EsotericSoftware/kryonet/issues/35))
 
 ## Usage of the TypeListener
 

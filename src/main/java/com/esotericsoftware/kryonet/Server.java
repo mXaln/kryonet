@@ -177,7 +177,8 @@ public class Server implements EndPoint {
 	}
 
 	/**
-	 * Opens a TCP and UDP server.
+	 * Opens a TCP and UDP server. All clients must also have a TCP and an UDP
+	 * port.
 	 *
 	 * @throws IOException
 	 *             if the server could not be opened.
@@ -664,6 +665,12 @@ public class Server implements EndPoint {
 		}
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * Should be called before connect().
+	 * 
+	 */
 	public void addListener(Listener listener) {
 		if (listener == null)
 			throw new IllegalArgumentException("listener cannot be null.");

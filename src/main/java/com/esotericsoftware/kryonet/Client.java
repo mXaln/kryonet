@@ -544,6 +544,12 @@ public class Client extends Connection implements EndPoint {
 		selector.close();
 	}
 
+	/**
+	 * {@inheritDoc}
+	 * 
+	 * Should be called before connect().
+	 * 
+	 */
 	public void addListener(Listener listener) {
 		super.addListener(listener);
 		if (TRACE)
