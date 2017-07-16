@@ -1,12 +1,32 @@
-# Temporary Files
+## Java
+*.class
+*.war
+*.ear
+hs_err_pid*
+bin/
+target/
+
+
+## Gradle
+local.properties
+.gradle/
+gradle-app.setting
+/build/
+
+## OS Specific
+.DS_Store
+Thumbs.db
+
+## Temporary Files
 *~
 .*.swp
 .DS_STORE
 
-bin/
-target/
+## Intellij
 .idea/
 *.iml
-local.properties
-build/
-.gradle
+
+##Eclipse
+.classpath
+.project
+.settings/
