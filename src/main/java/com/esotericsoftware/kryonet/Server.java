@@ -47,6 +47,8 @@ import com.esotericsoftware.kryo.util.IntMap;
 import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP;
+import com.esotericsoftware.kryonet.serialization.KryoSerialization;
+import com.esotericsoftware.kryonet.serialization.Serialization;
 
 /**
  * Manages TCP and optionally UDP connections from many {@link Client Clients}.

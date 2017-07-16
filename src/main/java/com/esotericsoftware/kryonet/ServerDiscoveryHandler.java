@@ -25,6 +25,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 
 import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
+import com.esotericsoftware.kryonet.serialization.Serialization;
 
 public interface ServerDiscoveryHandler {
 	/**

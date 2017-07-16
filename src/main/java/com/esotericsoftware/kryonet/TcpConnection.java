@@ -28,6 +28,8 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
+import com.esotericsoftware.kryonet.serialization.Serialization;
+
 import static com.esotericsoftware.minlog.Log.DEBUG;
 import static com.esotericsoftware.minlog.Log.TRACE;
 import static com.esotericsoftware.minlog.Log.debug;

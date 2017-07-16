@@ -50,6 +50,8 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP;
+import com.esotericsoftware.kryonet.serialization.KryoSerialization;
+import com.esotericsoftware.kryonet.serialization.Serialization;
 
 /**
  * Represents a TCP and optionally a UDP connection to a {@link Server}.
