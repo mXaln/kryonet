@@ -2,7 +2,7 @@
 
 A fork of [kryonet](https://github.com/EsotericSoftware/kryonet/), a Java library that provides a clean and simple API for efficient network communication.
 
-This fork was specifically made for [ProjectGG](https://github.com/Meidimax99/ProjektGG) but also adds the most demanded features on kryonet's issue tracker.
+This fork was specifically made for [ProjectGG](https://github.com/Meidimax99/ProjektGG) but also adds the most demanded features on kryonet's issue tracker. If you have a pull request for kryonet also consider adding it here, as kryonet doesn't seem to be updated anymore.
 
 ## Key Changes
 * A TypeListener for easier message handling (see the example below; also fixes [#130](https://github.com/EsotericSoftware/kryonet/issues/130))
