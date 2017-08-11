@@ -51,7 +51,7 @@ import com.esotericsoftware.kryonet.serialization.KryoSerialization;
 import com.esotericsoftware.kryonet.serialization.Serialization;
 
 /**
- * Manages TCP and optionally UDP connections from many {@link Client Clients}.
+ * Manages TCP and optionally UDP connections from many {@linkplain Client Clients}.
  *
  * @author Nathan Sweet <misc@n4te.com>
  */
@@ -149,7 +149,7 @@ public class Server implements EndPoint {
 		try {
 			selector = Selector.open();
 		} catch (IOException ex) {
-			throw new RuntimeException("Error opening selector.", ex);
+			throw new RuntimeException("Error opening the selector.", ex);
 		}
 	}
 

@@ -19,16 +19,16 @@
 
 package com.esotericsoftware.kryonet.util;
 
-import com.esotericsoftware.kryo.util.ObjectMap;
-
 import java.util.Random;
+
+import com.esotericsoftware.kryo.util.ObjectMap;
 
 /**
  * An unordered map where the values are ints. This implementation is a cuckoo
  * hash map using 3 hashes, random walking, and a small stash for problematic
  * keys. Null keys are not allowed. No allocation is done except when growing
- * the table size. <br>
- * <br>
+ * the table size.
+ * <p>
  * This map performs very fast get, containsKey, and remove (typically O(1),
  * worst case O(log(n))). Put may be a bit slower, depending on hash collisions.
  * Load factors greater than 0.91 greatly increase the chances the map will have
@@ -59,12 +59,15 @@ public class ObjectIntMap<K> {
 	 * 0.8. This map will hold 25 items before growing the backing table.
 	 */
 	public ObjectIntMap() {
-		this(32, 0.8f);
+		this(32);
 	}
 
 	/**
 	 * Creates a new map with a load factor of 0.8. This map will hold
-	 * initialCapacity * 0.8 items before growing the backing table.
+	 * <i>initialCapacity * 0.8</i> items before growing the backing table.
+	 * 
+	 * @param initialCapacity
+	 *            The initial capacity of the map.
 	 */
 	public ObjectIntMap(int initialCapacity) {
 		this(initialCapacity, 0.8f);
@@ -72,21 +75,27 @@ public class ObjectIntMap<K> {
 
 	/**
 	 * Creates a new map with the specified initial capacity and load factor.
-	 * This map will hold initialCapacity * loadFactor items before growing the
-	 * backing table.
+	 * This map will hold <i>initialCapacity * loadFactor</i> items before
+	 * growing the backing table.
+	 * 
+	 * @param initialCapacity
+	 *            The initial capacity of the map.
+	 * @param loadFactor
+	 *            After this percentage of the map capacity is used, the map
+	 *            size is increased.
 	 */
 	public ObjectIntMap(int initialCapacity, float loadFactor) {
 		if (initialCapacity < 0)
 			throw new IllegalArgumentException(
-					"initialCapacity must be >= 0: " + initialCapacity);
+					"The initial capacity must be >= 0: " + initialCapacity);
 		if (initialCapacity > 1 << 30)
 			throw new IllegalArgumentException(
-					"initialCapacity is too large: " + initialCapacity);
+					"The initial capacity is too large: " + initialCapacity);
 		capacity = ObjectMap.nextPowerOfTwo(initialCapacity);
 
 		if (loadFactor <= 0)
 			throw new IllegalArgumentException(
-					"loadFactor must be > 0: " + loadFactor);
+					"The load factor must be > 0: " + loadFactor);
 		this.loadFactor = loadFactor;
 
 		threshold = (int) (capacity * loadFactor);
@@ -102,6 +111,9 @@ public class ObjectIntMap<K> {
 
 	/**
 	 * Creates a new map identical to the specified map.
+	 * 
+	 * @param map
+	 *            The map to copy.
 	 */
 	public ObjectIntMap(ObjectIntMap<? extends K> map) {
 		this(map.capacity, map.loadFactor);
@@ -112,9 +124,20 @@ public class ObjectIntMap<K> {
 		size = map.size;
 	}
 
+	/**
+	 * Associates the specified integer value with the specified key in this
+	 * map. If the map previously contained a mapping for the key, the old value
+	 * is replaced.
+	 * 
+	 * @param key
+	 *            The key with which the specified value is to be associated.
+	 *            Cannot be null.
+	 * @param value
+	 *            The value to be associated with the key.
+	 */
 	public void put(K key, int value) {
 		if (key == null)
-			throw new IllegalArgumentException("key cannot be null.");
+			throw new IllegalArgumentException("The key cannot be null.");
 		K[] keyTable = this.keyTable;
 
 		// Check for existing keys.
@@ -423,11 +446,16 @@ public class ObjectIntMap<K> {
 	 * less. If the capacity is already less, nothing is done. If the map
 	 * contains more items than the specified capacity, the next highest power
 	 * of two capacity is used instead.
+	 * 
+	 * @param maximumCapacity
+	 *            The new maximal capacity of the map.
+	 * 
+	 * @see ObjectIntMap#resize(int)
 	 */
 	public void shrink(int maximumCapacity) {
 		if (maximumCapacity < 0)
 			throw new IllegalArgumentException(
-					"maximumCapacity must be >= 0: " + maximumCapacity);
+					"The maximum capacity must be >= 0: " + maximumCapacity);
 		if (size > maximumCapacity)
 			maximumCapacity = size;
 		if (capacity <= maximumCapacity)
@@ -508,7 +536,7 @@ public class ObjectIntMap<K> {
 	}
 
 	/**
-	 * Increases the size of the backing array to acommodate the specified
+	 * Increases the size of the backing array to accommodate the specified
 	 * number of additional items. Useful before adding many items to avoid
 	 * multiple backing array resizes.
 	 */

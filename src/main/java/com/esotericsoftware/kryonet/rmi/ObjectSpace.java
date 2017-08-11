@@ -626,7 +626,7 @@ public class ObjectSpace {
 			if (connection.getEndPoint().getUpdateThread() == Thread
 					.currentThread())
 				throw new IllegalStateException(
-						"Cannot wait for an RMI response on the connection's update thread.");
+						"Cannot wait for a RMI response on the connection's update thread.");
 
 			long endTime = System.currentTimeMillis() + timeoutMillis;
 

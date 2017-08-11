@@ -99,8 +99,8 @@ public interface RemoteObject {
 	public void setUDP(boolean udp);
 
 	/**
-	 * If false, calls to {@link Object#toString()} will return "<proxy>"
-	 * instead of being invoking the remote method. Default is false.
+	 * If set to false, calls to {@link Object#toString()} will return {@literal "<proxy>"}
+	 * instead of invoking the remote method. Default is false.
 	 */
 	public void setRemoteToString(boolean remoteToString);
 

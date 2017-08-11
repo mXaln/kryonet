@@ -21,7 +21,7 @@ package com.esotericsoftware.kryonet.rmi;
 
 /**
  * Thrown when a method with a return value is invoked on a remote object and
- * the response is not received with the
+ * the response is not received within the
  * {@link RemoteObject#setResponseTimeout(int) response timeout}.
  *
  * @author Nathan Sweet <misc@n4te.com>
