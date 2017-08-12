@@ -14,7 +14,7 @@ This fork was specifically made for [ProjectGG](https://github.com/Meidimax99/Pr
 
 ## Usage of the TypeListener
 
-This code adds a listener to handle receiving objects:
+The type listener takes care of distributing received messages to previously specified handlers. In the following example _con_ is the connection to the client and _msg_ is the received object - already cast to the right type:
 
 ```java
 TypeListener typeListener = new TypeListener();
