@@ -9,8 +9,10 @@ This fork was specifically made for [ProjectGG](https://github.com/Meidimax99/Pr
 * Listener is now a interface ([#39](https://github.com/EsotericSoftware/kryonet/issues/39))
 * Uses kryo 4.0.0 ([#77](https://github.com/EsotericSoftware/kryonet/issues/77); also fixes [#123](https://github.com/EsotericSoftware/kryonet/issues/123))
 * Fixes for the Android 5 and iOS crashes ([#106](https://github.com/EsotericSoftware/kryonet/issues/106))
+* Made the LAN Host Discovery available to Non-Kryo-Serializations ([#127](https://github.com/EsotericSoftware/kryonet/issues/127))
+* Multiple changes to custom serializations (see below; [#137](https://github.com/EsotericSoftware/kryonet/issues/137))
 * Kryonet now uses a gradle setup
-* A few improvements to the documentation ([#44](https://github.com/EsotericSoftware/kryonet/issues/44), [#35](https://github.com/EsotericSoftware/kryonet/issues/35), [#137](https://github.com/EsotericSoftware/kryonet/issues/137))
+* A few improvements to the documentation ([#44](https://github.com/EsotericSoftware/kryonet/issues/44), [#35](https://github.com/EsotericSoftware/kryonet/issues/35))
 
 ## Usage of the TypeListener
 
@@ -30,6 +32,10 @@ typeListener.addTypeHandler(SomeOtherRequest.class,
 
 server.addListener(typeListener);
 ```
+
+## Changes to Custom Serializations
+
+[...]
 
 ## Download
 

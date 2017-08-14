@@ -635,7 +635,7 @@ public class Client extends Connection implements EndPoint {
 			}
 			if (INFO)
 				info("kryonet", "Discovered server: " + packet.getAddress());
-			discoveryHandler.onDiscoveredHost(packet, getKryo());
+			discoveryHandler.onDiscoveredHost(packet);
 			return packet.getAddress();
 		} catch (IOException ex) {
 			if (ERROR)
@@ -676,7 +676,7 @@ public class Client extends Connection implements EndPoint {
 				if (INFO)
 					info("kryonet",
 							"Discovered server: " + packet.getAddress());
-				discoveryHandler.onDiscoveredHost(packet, getKryo());
+				discoveryHandler.onDiscoveredHost(packet);
 				hosts.add(packet.getAddress());
 			}
 		} catch (IOException ex) {

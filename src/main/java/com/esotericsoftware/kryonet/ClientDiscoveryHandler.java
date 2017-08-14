@@ -21,7 +21,6 @@ package com.esotericsoftware.kryonet;
 
 import java.net.DatagramPacket;
 
-import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 
 public interface ClientDiscoveryHandler {
@@ -38,7 +37,7 @@ public interface ClientDiscoveryHandler {
 		}
 
 		@Override
-		public void onDiscoveredHost(DatagramPacket datagramPacket, Kryo kryo) {
+		public void onDiscoveredHost(DatagramPacket datagramPacket) {
 			//
 		}
 
@@ -65,10 +64,8 @@ public interface ClientDiscoveryHandler {
 	 *            the same {@link DatagramPacket} from
 	 *            {@link #onRequestNewDatagramPacket()}, after being filled with
 	 *            the incoming packet data.
-	 * @param kryo
-	 *            the {@link Kryo} instance
 	 */
-	public void onDiscoveredHost(DatagramPacket datagramPacket, Kryo kryo);
+	public void onDiscoveredHost(DatagramPacket datagramPacket);
 
 	/**
 	 * Called right before the {@link Client#discoverHost(int, int)} or
