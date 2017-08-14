@@ -22,8 +22,7 @@ package com.esotericsoftware.kryonet;
 import java.io.IOException;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryonet.serialization.KryoSerialization;
-import com.esotericsoftware.kryonet.serialization.Serialization;
+import com.esotericsoftware.kryonet.serialization.KryoSerializationFactory.KryoSerialization;
 
 /**
  * Represents the local end point of a connection.
@@ -31,14 +30,10 @@ import com.esotericsoftware.kryonet.serialization.Serialization;
  * @author Nathan Sweet <misc@n4te.com>
  */
 public interface EndPoint extends Runnable {
-	/**
-	 * Gets the serialization instance that will be used to serialize and
-	 * deserialize objects.
-	 */
-	public Serialization getSerialization();
 
 	/**
-	 * If the listener already exists, it is not added again.
+	 * Adds a listener to the endpoint. If the listener already exists, it is
+	 * <i>not</i> added again.
 	 */
 	public void addListener(Listener listener);
 

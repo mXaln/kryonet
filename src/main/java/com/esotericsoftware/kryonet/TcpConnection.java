@@ -19,6 +19,11 @@
 
 package com.esotericsoftware.kryonet;
 
+import static com.esotericsoftware.minlog.Log.DEBUG;
+import static com.esotericsoftware.minlog.Log.TRACE;
+import static com.esotericsoftware.minlog.Log.debug;
+import static com.esotericsoftware.minlog.Log.trace;
+
 import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
@@ -29,11 +34,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.SocketChannel;
 
 import com.esotericsoftware.kryonet.serialization.Serialization;
-
-import static com.esotericsoftware.minlog.Log.DEBUG;
-import static com.esotericsoftware.minlog.Log.TRACE;
-import static com.esotericsoftware.minlog.Log.debug;
-import static com.esotericsoftware.minlog.Log.trace;
 
 /**
  * @author Nathan Sweet <misc@n4te.com>
@@ -130,7 +130,7 @@ class TcpConnection {
 		}
 	}
 
-	public Object readObject(Connection connection) throws IOException {
+	public Object readObject() throws IOException {
 		SocketChannel socketChannel = this.socketChannel;
 		if (socketChannel == null)
 			throw new SocketException("Connection is closed.");
@@ -180,7 +180,7 @@ class TcpConnection {
 		readBuffer.limit(startPosition + length);
 		Object object;
 		try {
-			object = serialization.read(connection, readBuffer);
+			object = serialization.read(readBuffer);
 		} catch (Exception ex) {
 			throw new KryoNetException("Error during deserialization.", ex);
 		}
@@ -227,7 +227,7 @@ class TcpConnection {
 	/**
 	 * This method is thread safe.
 	 */
-	public int send(Connection connection, Object object) throws IOException {
+	public int send(Object object) throws IOException {
 		SocketChannel socketChannel = this.socketChannel;
 		if (socketChannel == null)
 			throw new SocketException("Connection is closed.");
@@ -239,7 +239,7 @@ class TcpConnection {
 
 			// Write data.
 			try {
-				serialization.write(connection, writeBuffer, object);
+				serialization.write(writeBuffer, object);
 			} catch (KryoNetException ex) {
 				throw new KryoNetException("Error serializing object of type: "
 						+ object.getClass().getName(), ex);
@@ -267,13 +267,11 @@ class TcpConnection {
 						/ (float) writeBuffer.capacity();
 				if (DEBUG && percentage > 0.75f)
 					debug("kryonet",
-							connection
-									+ " TCP write buffer is approaching capacity: "
+							" TCP write buffer is approaching capacity: "
 									+ percentage + "%");
 				else if (TRACE && percentage > 0.25f)
-					trace("kryonet",
-							connection + " TCP write buffer utilization: "
-									+ percentage + "%");
+					trace("kryonet", " TCP write buffer utilization: "
+							+ percentage + "%");
 			}
 
 			lastWriteTime = System.currentTimeMillis();

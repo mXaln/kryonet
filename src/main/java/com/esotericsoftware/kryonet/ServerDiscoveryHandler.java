@@ -25,7 +25,6 @@ import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 
 import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
-import com.esotericsoftware.kryonet.serialization.Serialization;
 
 public interface ServerDiscoveryHandler {
 	/**
@@ -37,8 +36,7 @@ public interface ServerDiscoveryHandler {
 
 		@Override
 		public boolean onDiscoverHost(DatagramChannel datagramChannel,
-				InetSocketAddress fromAddress, Serialization serialization)
-				throws IOException {
+				InetSocketAddress fromAddress) throws IOException {
 			datagramChannel.send(emptyBuffer, fromAddress);
 			return true;
 		}
@@ -49,8 +47,6 @@ public interface ServerDiscoveryHandler {
 	 *
 	 * @param fromAddress
 	 *            {@link InetSocketAddress} the {@link DiscoverHost} came from
-	 * @param serialization
-	 *            the {@link Server}'s {@link Serialization} instance
 	 * @return true if a response was sent to {@code fromAddress}, false
 	 *         otherwise
 	 * @throws IOException
@@ -58,6 +54,5 @@ public interface ServerDiscoveryHandler {
 	 *             {@link DatagramChannel#send(ByteBuffer, java.net.SocketAddress)}
 	 */
 	public boolean onDiscoverHost(DatagramChannel datagramChannel,
-			InetSocketAddress fromAddress, Serialization serialization)
-			throws IOException;
+			InetSocketAddress fromAddress) throws IOException;
 }

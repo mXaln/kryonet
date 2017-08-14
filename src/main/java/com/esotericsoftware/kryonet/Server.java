@@ -47,16 +47,17 @@ import com.esotericsoftware.kryo.util.IntMap;
 import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP;
-import com.esotericsoftware.kryonet.serialization.KryoSerialization;
-import com.esotericsoftware.kryonet.serialization.Serialization;
+import com.esotericsoftware.kryonet.serialization.KryoSerializationFactory;
+import com.esotericsoftware.kryonet.serialization.SerializationFactory;
 
 /**
- * Manages TCP and optionally UDP connections from many {@linkplain Client Clients}.
+ * Manages TCP and optionally UDP connections from many {@linkplain Client
+ * Clients}.
  *
  * @author Nathan Sweet <misc@n4te.com>
  */
 public class Server implements EndPoint {
-	private final Serialization serialization;
+	private final SerializationFactory serializationFactory;
 	private final int writeBufferSize, objectBufferSize;
 	private final Selector selector;
 	private int emptySelects;
@@ -134,15 +135,15 @@ public class Server implements EndPoint {
 	 *            largest object that will be sent or received.
 	 */
 	public Server(int writeBufferSize, int objectBufferSize) {
-		this(writeBufferSize, objectBufferSize, new KryoSerialization());
+		this(writeBufferSize, objectBufferSize, new KryoSerializationFactory());
 	}
 
 	public Server(int writeBufferSize, int objectBufferSize,
-			Serialization serialization) {
+			SerializationFactory serializationFactory) {
 		this.writeBufferSize = writeBufferSize;
 		this.objectBufferSize = objectBufferSize;
 
-		this.serialization = serialization;
+		this.serializationFactory = serializationFactory;
 
 		this.discoveryHandler = ServerDiscoveryHandler.DEFAULT;
 
@@ -158,12 +159,12 @@ public class Server implements EndPoint {
 		discoveryHandler = newDiscoveryHandler;
 	}
 
-	public Serialization getSerialization() {
-		return serialization;
+	public SerializationFactory getSerializationFactory() {
+		return serializationFactory;
 	}
 
 	public Kryo getKryo() {
-		return ((KryoSerialization) serialization).getKryo();
+		return ((KryoSerializationFactory) serializationFactory).getKryo();
 	}
 
 	/**
@@ -206,7 +207,9 @@ public class Server implements EndPoint {
 							+ "/TCP");
 
 				if (udpPort != null) {
-					udp = new UdpConnection(serialization, objectBufferSize);
+					udp = new UdpConnection(
+							serializationFactory.newInstance(null),
+							objectBufferSize);
 					udp.bind(selector, udpPort);
 					if (DEBUG)
 						debug("kryonet", "Accepting connections on port: "
@@ -282,7 +285,7 @@ public class Server implements EndPoint {
 								try {
 									while (true) {
 										Object object = fromConnection.tcp
-												.readObject(fromConnection);
+												.readObject();
 										if (object == null)
 											break;
 										if (DEBUG) {
@@ -391,7 +394,7 @@ public class Server implements EndPoint {
 
 						Object object;
 						try {
-							object = udp.readObject(fromConnection);
+							object = udp.readObject();
 						} catch (KryoNetException ex) {
 							if (WARN) {
 								if (fromConnection != null) {
@@ -442,7 +445,7 @@ public class Server implements EndPoint {
 								try {
 									boolean responseSent = discoveryHandler
 											.onDiscoverHost(udp.datagramChannel,
-													fromAddress, serialization);
+													fromAddress);
 									if (DEBUG && responseSent)
 										debug("kryonet",
 												"Responded to host discovery from: "
@@ -548,7 +551,8 @@ public class Server implements EndPoint {
 
 	private void acceptOperation(SocketChannel socketChannel) {
 		Connection connection = newConnection();
-		connection.initialize(serialization, writeBufferSize, objectBufferSize);
+		connection.initialize(serializationFactory.newInstance(connection),
+				writeBufferSize, objectBufferSize);
 		connection.endPoint = this;
 		UdpConnection udp = this.udp;
 		if (udp != null)

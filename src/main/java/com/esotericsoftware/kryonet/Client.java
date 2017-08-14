@@ -50,8 +50,10 @@ import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP;
-import com.esotericsoftware.kryonet.serialization.KryoSerialization;
+import com.esotericsoftware.kryonet.serialization.KryoSerializationFactory;
+import com.esotericsoftware.kryonet.serialization.KryoSerializationFactory.KryoSerialization;
 import com.esotericsoftware.kryonet.serialization.Serialization;
+import com.esotericsoftware.kryonet.serialization.SerializationFactory;
 
 /**
  * Represents a TCP and optionally a UDP connection to a {@link Server}.
@@ -118,15 +120,15 @@ public class Client extends Connection implements EndPoint {
 	 *            largest object that will be sent or received.
 	 */
 	public Client(int writeBufferSize, int objectBufferSize) {
-		this(writeBufferSize, objectBufferSize, new KryoSerialization());
+		this(writeBufferSize, objectBufferSize, new KryoSerializationFactory());
 	}
 
 	public Client(int writeBufferSize, int objectBufferSize,
-			Serialization serialization) {
+			SerializationFactory serializationFactory) {
 		super();
 		endPoint = this;
 
-		this.serialization = serialization;
+		this.serialization = serializationFactory.newInstance(this);
 
 		this.discoveryHandler = ClientDiscoveryHandler.DEFAULT;
 
@@ -142,10 +144,6 @@ public class Client extends Connection implements EndPoint {
 	public void setDiscoveryHandler(
 			ClientDiscoveryHandler newDiscoveryHandler) {
 		discoveryHandler = newDiscoveryHandler;
-	}
-
-	public Serialization getSerialization() {
-		return serialization;
 	}
 
 	public Kryo getKryo() {
@@ -259,7 +257,7 @@ public class Client extends Connection implements EndPoint {
 							&& System.currentTimeMillis() < endTime) {
 						RegisterUDP registerUDP = new RegisterUDP();
 						registerUDP.connectionID = id;
-						udp.send(this, registerUDP, udpAddress);
+						udp.send(registerUDP, udpAddress);
 						try {
 							udpRegistrationLock.wait(100);
 						} catch (InterruptedException ignored) {
@@ -352,7 +350,7 @@ public class Client extends Connection implements EndPoint {
 						if ((ops & SelectionKey.OP_READ) == SelectionKey.OP_READ) {
 							if (selectionKey.attachment() == tcp) {
 								while (true) {
-									Object object = tcp.readObject(this);
+									Object object = tcp.readObject();
 									if (object == null)
 										break;
 									if (!tcpRegistered) {
@@ -416,7 +414,7 @@ public class Client extends Connection implements EndPoint {
 							} else {
 								if (udp.readFromAddress() == null)
 									continue;
-								Object object = udp.readObject(this);
+								Object object = udp.readObject();
 								if (object == null)
 									continue;
 								if (DEBUG) {
@@ -581,7 +579,7 @@ public class Client extends Connection implements EndPoint {
 	private void broadcast(int udpPort, DatagramSocket socket)
 			throws IOException {
 		ByteBuffer dataBuffer = ByteBuffer.allocate(64);
-		serialization.write(null, dataBuffer, new DiscoverHost());
+		serialization.write(dataBuffer, new DiscoverHost());
 		dataBuffer.flip();
 		byte[] data = new byte[dataBuffer.limit()];
 		dataBuffer.get(data);

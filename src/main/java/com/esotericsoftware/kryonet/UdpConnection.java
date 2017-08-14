@@ -19,6 +19,9 @@
 
 package com.esotericsoftware.kryonet;
 
+import static com.esotericsoftware.minlog.Log.DEBUG;
+import static com.esotericsoftware.minlog.Log.debug;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
@@ -29,9 +32,6 @@ import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 
 import com.esotericsoftware.kryonet.serialization.Serialization;
-
-import static com.esotericsoftware.minlog.Log.DEBUG;
-import static com.esotericsoftware.minlog.Log.debug;
 
 /**
  * @author Nathan Sweet <misc@n4te.com>
@@ -114,11 +114,11 @@ class UdpConnection {
 		return connectedAddress;
 	}
 
-	public Object readObject(Connection connection) {
+	public Object readObject() {
 		readBuffer.flip();
 		try {
 			try {
-				Object object = serialization.read(connection, readBuffer);
+				Object object = serialization.read(readBuffer);
 				if (readBuffer.hasRemaining())
 					throw new KryoNetException("Incorrect number of bytes ("
 							+ readBuffer.remaining()
@@ -136,15 +136,14 @@ class UdpConnection {
 	/**
 	 * This method is thread safe.
 	 */
-	public int send(Connection connection, Object object, SocketAddress address)
-			throws IOException {
+	public int send(Object object, SocketAddress address) throws IOException {
 		DatagramChannel datagramChannel = this.datagramChannel;
 		if (datagramChannel == null)
 			throw new SocketException("Connection is closed.");
 		synchronized (writeLock) {
 			try {
 				try {
-					serialization.write(connection, writeBuffer, object);
+					serialization.write(writeBuffer, object);
 				} catch (Exception ex) {
 					throw new KryoNetException(
 							"Error serializing object of type: "
