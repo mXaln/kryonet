@@ -25,6 +25,9 @@ import com.esotericsoftware.kryonet.Connection;
 
 /**
  * Controls how objects are transmitted over the network.
+ * <p>
+ * All implementations have to be thread-safe, as the same instance of this
+ * class is used for every connection on a server.
  */
 public interface Serialization {
 	/**
