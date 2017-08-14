@@ -22,6 +22,11 @@ public class KryoSerializationFactory implements SerializationFactory {
 
 	public KryoSerializationFactory(Kryo kryo) {
 		this.kryo = kryo;
+		this.kryo.register(RegisterTCP.class);
+		this.kryo.register(RegisterUDP.class);
+		this.kryo.register(KeepAlive.class);
+		this.kryo.register(DiscoverHost.class);
+		this.kryo.register(Ping.class);
 	}
 
 	public Kryo getKryo() {
@@ -48,12 +53,6 @@ public class KryoSerializationFactory implements SerializationFactory {
 
 		public KryoSerialization(Kryo kryo) {
 			this.kryo = kryo;
-
-			kryo.register(RegisterTCP.class);
-			kryo.register(RegisterUDP.class);
-			kryo.register(KeepAlive.class);
-			kryo.register(DiscoverHost.class);
-			kryo.register(Ping.class);
 
 			input = new ByteBufferInput();
 			output = new ByteBufferOutput();
