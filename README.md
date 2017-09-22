@@ -6,13 +6,13 @@ This fork was specifically made for [ProjectGG](https://github.com/Meidimax99/Pr
 
 ## Key Changes
 * A TypeListener for easier message handling (see the example below; also fixes [#130](https://github.com/EsotericSoftware/kryonet/issues/130))
-* Listener is now a interface ([#39](https://github.com/EsotericSoftware/kryonet/issues/39))
-* Uses kryo 4.0.0 ([#77](https://github.com/EsotericSoftware/kryonet/issues/77); also fixes [#123](https://github.com/EsotericSoftware/kryonet/issues/123))
+* Listener is now an interface ([#39](https://github.com/EsotericSoftware/kryonet/issues/39))
+* Kryo 4.0.1 is used for the serialization ([#77](https://github.com/EsotericSoftware/kryonet/issues/77); also fixes [#123](https://github.com/EsotericSoftware/kryonet/issues/123))
 * Fixes for the Android 5 and iOS crashes ([#106](https://github.com/EsotericSoftware/kryonet/issues/106))
-* Made the LAN Host Discovery available to Non-Kryo-Serializations ([#127](https://github.com/EsotericSoftware/kryonet/issues/127))
-* Multiple changes to custom serializations (see below; [#137](https://github.com/EsotericSoftware/kryonet/issues/137))
-* Kryonet now uses a gradle setup
-* A few improvements to the documentation ([#44](https://github.com/EsotericSoftware/kryonet/issues/44), [#35](https://github.com/EsotericSoftware/kryonet/issues/35))
+* The LAN Host Discovery is now available to Non-Kryo-Serializations ([#127](https://github.com/EsotericSoftware/kryonet/issues/127))
+* A few other changes to serializations (see the respective paragraph below)
+* Kryonet now uses a [gradle](https://gradle.org/) build setup
+* A couple improvements to the documentation ([#44](https://github.com/EsotericSoftware/kryonet/issues/44), [#35](https://github.com/EsotericSoftware/kryonet/issues/35))
 
 ## Usage of the TypeListener
 
@@ -33,9 +33,10 @@ typeListener.addTypeHandler(SomeOtherRequest.class,
 server.addListener(typeListener);
 ```
 
-## Changes to Custom Serializations
+## Changes to (Custom) Serializations
 
-[...]
+* The serialization objects are created by [factories](https://github.com/crykn/kryonet/blob/master/src/main/java/com/esotericsoftware/kryonet/serialization/SerializationFactory.java)
+* The server now uses a serialization instance _per_ TCP connection (and still only one serialization instance for the UDP connections). This allows the server to keep responding while another message is serialized (see [#137](https://github.com/EsotericSoftware/kryonet/issues/137)).
 
 ## Download
 

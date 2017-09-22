@@ -1,6 +1,6 @@
 apply plugin: "java"
 
-version '2.22'
+version '2.22.1'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -11,5 +11,5 @@ repositories {
 
 dependencies {
 	compile "com.esotericsoftware:jsonbeans:0.7"
-    compile "com.esotericsoftware:kryo:4.0.0"
+    compile "com.esotericsoftware:kryo:4.0.1"
 }
