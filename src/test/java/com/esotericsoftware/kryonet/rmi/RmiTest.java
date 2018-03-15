@@ -87,9 +87,12 @@ public class RmiTest extends KryoNetTestCase {
 		client.connect(5000, host, tcpPort, udpPort);
 
 		waitForThreads();
+		
+		server.stop();
+		server.close();
 	}
 
-	public void testMany () throws IOException {
+	public void testMany() throws IOException {
 		Server server = new Server();
 		Kryo serverKryo = server.getKryo();
 		register(serverKryo);
@@ -103,11 +106,11 @@ public class RmiTest extends KryoNetTestCase {
 		serverObjectSpace.register(42, serverTestObject);
 
 		server.addListener(new Listener() {
-			public void connected (final Connection connection) {
+			public void connected(final Connection connection) {
 				serverObjectSpace.addConnection(connection);
 			}
 
-			public void received (Connection connection, Object object) {
+			public void received(Connection connection, Object object) {
 				if (object instanceof MessageWithTestObject) {
 					assertEquals(256 + 512 + 1024, serverTestObject.moos);
 					stopEndPoints(2000);
@@ -122,14 +125,15 @@ public class RmiTest extends KryoNetTestCase {
 
 		startEndPoint(client);
 		client.addListener(new Listener() {
-			public void connected (final Connection connection) {
+			public void connected(final Connection connection) {
 				new Thread() {
-					public void run () {
-						TestObject test = ObjectSpace.getRemoteObject(connection, 42, TestObject.class);
+					public void run() {
+						TestObject test = ObjectSpace.getRemoteObject(
+								connection, 42, TestObject.class);
 						test.other();
 						// Timeout on purpose.
 						try {
-							((RemoteObject)test).setResponseTimeout(200);
+							((RemoteObject) test).setResponseTimeout(200);
 							test.slow();
 							fail();
 						} catch (TimeoutException ignored) {
@@ -138,9 +142,9 @@ public class RmiTest extends KryoNetTestCase {
 							Thread.sleep(300);
 						} catch (InterruptedException ex) {
 						}
-						((RemoteObject)test).setResponseTimeout(3000);
+						((RemoteObject) test).setResponseTimeout(3000);
 						for (int i = 0; i < 256; i++)
-							assertEquals(4321f, (float)test.other());
+							assertEquals(4321f, (float) test.other());
 						for (int i = 0; i < 256; i++)
 							test.moo();
 						for (int i = 0; i < 256; i++)
@@ -157,13 +161,17 @@ public class RmiTest extends KryoNetTestCase {
 		waitForThreads();
 	}
 
-	static public void runTest (final Connection connection, final int id, final float other) {
+	static public void runTest(final Connection connection, final int id,
+			final float other) {
 		new Thread() {
-			public void run () {
-				TestObject test = ObjectSpace.getRemoteObject(connection, id, TestObject.class);
-				RemoteObject remoteObject = (RemoteObject)test;
-				// Default behavior. RMI is transparent, method calls behave like normal
-				// (return values and exceptions are returned, call is synchronous)
+			public void run() {
+				TestObject test = ObjectSpace.getRemoteObject(connection, id,
+						TestObject.class);
+				RemoteObject remoteObject = (RemoteObject) test;
+				// Default behavior. RMI is transparent, method calls behave
+				// like normal
+				// (return values and exceptions are returned, call is
+				// synchronous)
 				System.out.println("hashCode: " + test.hashCode());
 				System.out.println("toString: " + test);
 				test.moo();
@@ -176,7 +184,8 @@ public class RmiTest extends KryoNetTestCase {
 				assertEquals(0f, test.other());
 				remoteObject.setUDP(false);
 
-				// Test that RMI correctly waits for the remotely invoked method to exit
+				// Test that RMI correctly waits for the remotely invoked method
+				// to exit
 				remoteObject.setResponseTimeout(5000);
 				test.moo("You should see this two seconds before...", 2000);
 				System.out.println("...This");
@@ -191,7 +200,8 @@ public class RmiTest extends KryoNetTestCase {
 				}
 				assertTrue(caught);
 
-				// Return values are ignored, but exceptions are still dealt with properly
+				// Return values are ignored, but exceptions are still dealt
+				// with properly
 
 				remoteObject.setTransmitReturnValue(false);
 				test.moo("Baa");
@@ -224,7 +234,8 @@ public class RmiTest extends KryoNetTestCase {
 				// Non-blocking call that errors out
 				remoteObject.setTransmitReturnValue(false);
 				test.throwException();
-				assertEquals(remoteObject.waitForLastResponse().getClass(), UnsupportedOperationException.class);
+				assertEquals(remoteObject.waitForLastResponse().getClass(),
+						UnsupportedOperationException.class);
 
 				// Call will time out if non-blocking isn't working properly
 				remoteObject.setTransmitExceptions(false);
@@ -234,36 +245,43 @@ public class RmiTest extends KryoNetTestCase {
 				MessageWithTestObject m = new MessageWithTestObject();
 				m.number = 678;
 				m.text = "sometext";
-				m.testObject = ObjectSpace.getRemoteObject(connection, id, TestObject.class);
+				m.testObject = ObjectSpace.getRemoteObject(connection, id,
+						TestObject.class);
 				connection.sendTCP(m);
 			}
 		}.start();
 	}
 
-	/** Registers the same classes in the same order on both the client and server. */
-	static public void register (Kryo kryo) {
-		kryo.register(Object.class); // Needed for Object#toString, hashCode, etc.
+	/**
+	 * Registers the same classes in the same order on both the client and
+	 * server.
+	 */
+	static public void register(Kryo kryo) {
+		kryo.register(Object.class); // Needed for Object#toString, hashCode,
+										// etc.
 		kryo.register(TestObject.class);
 		kryo.register(MessageWithTestObject.class);
 		kryo.register(StackTraceElement.class);
 		kryo.register(StackTraceElement[].class);
 		kryo.register(UnsupportedOperationException.class);
-		kryo.setReferences(true); // Needed for UnsupportedOperationException, which has a circular reference in the cause field.
+		kryo.setReferences(true); // Needed for UnsupportedOperationException,
+									// which has a circular reference in the
+									// cause field.
 		ObjectSpace.registerClasses(kryo);
 	}
 
 	static public interface TestObject {
-		public void throwException ();
+		public void throwException();
 
-		public void moo ();
+		public void moo();
 
-		public void moo (String value);
+		public void moo(String value);
 
-		public void moo (String value, long delay);
+		public void moo(String value, long delay);
 
-		public float other ();
+		public float other();
 
-		public float slow ();
+		public float slow();
 	}
 
 	static public class TestObjectImpl implements TestObject {
@@ -271,25 +289,25 @@ public class RmiTest extends KryoNetTestCase {
 		private final float other;
 		public int moos;
 
-		public TestObjectImpl (int other) {
+		public TestObjectImpl(int other) {
 			this.other = other;
 		}
 
-		public void throwException () {
+		public void throwException() {
 			throw new UnsupportedOperationException("Why would I do that?");
 		}
 
-		public void moo () {
+		public void moo() {
 			moos++;
 			System.out.println("Moo!");
 		}
 
-		public void moo (String value) {
+		public void moo(String value) {
 			moos += 2;
 			System.out.println("Moo: " + value);
 		}
 
-		public void moo (String value, long delay) {
+		public void moo(String value, long delay) {
 			moos += 4;
 			System.out.println("Moo: " + value);
 			try {
@@ -299,11 +317,11 @@ public class RmiTest extends KryoNetTestCase {
 			}
 		}
 
-		public float other () {
+		public float other() {
 			return other;
 		}
 
-		public float slow () {
+		public float slow() {
 			try {
 				Thread.sleep(300);
 			} catch (InterruptedException ex) {
