@@ -48,7 +48,7 @@ public class JsonSerializationFactory implements SerializationFactory {
 			this.prettyPrint = prettyPrint;
 		}
 
-		public void write(ByteBuffer buffer, Object object) {
+		public synchronized void write(ByteBuffer buffer, Object object) {
 			byteBufferOutputStream.setByteBuffer(buffer);
 			int start = buffer.position();
 			try {
@@ -74,7 +74,7 @@ public class JsonSerializationFactory implements SerializationFactory {
 			}
 		}
 
-		public Object read(ByteBuffer buffer) {
+		public synchronized Object read(ByteBuffer buffer) {
 			byteBufferInputStream.setByteBuffer(buffer);
 			return json.fromJson(Object.class, byteBufferInputStream);
 		}

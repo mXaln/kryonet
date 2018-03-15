@@ -99,8 +99,9 @@ public interface RemoteObject {
 	public void setUDP(boolean udp);
 
 	/**
-	 * If set to false, calls to {@link Object#toString()} will return {@literal "<proxy>"}
-	 * instead of invoking the remote method. Default is false.
+	 * If set to false, calls to {@link Object#toString()} will return
+	 * {@literal "<proxy>"} instead of invoking the remote method. Default is
+	 * false.
 	 */
 	public void setRemoteToString(boolean remoteToString);
 
@@ -113,6 +114,13 @@ public interface RemoteObject {
 	 *      int, Class...)
 	 */
 	public Object waitForLastResponse();
+
+	/**
+	 * Returns true if the response to the last method invocation has been
+	 * received and can be retrieved using {@link #waitForLastResponse()}
+	 * without blocking.
+	 */
+	public Object hasLastResponse();
 
 	/**
 	 * Gets the ID of response for the last method invocation.
@@ -132,6 +140,13 @@ public interface RemoteObject {
 	 *      int, Class...)
 	 */
 	public Object waitForResponse(byte responseID);
+
+	/**
+	 * Returns true if the response to the specified method invocation has been
+	 * received and can be retrieved using {@link #waitForResponse(byte)}
+	 * without blocking.
+	 */
+	public Object hasResponse(byte responseID);
 
 	/**
 	 * Causes this RemoteObject to stop listening to the connection for method

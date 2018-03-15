@@ -70,6 +70,8 @@ import static com.esotericsoftware.minlog.Log.warn;
  * {@link RemoteObject#setNonBlocking(boolean) ignored}, an extra byte is
  * written. If the type of a parameter is not final (note primitives are final)
  * then an extra byte is written for that parameter.
+ * <p>
+ * ObjectSpace requires {@link KryoSerialization}.
  *
  * @author Nathan Sweet <misc@n4te.com>
  */
@@ -234,7 +236,7 @@ public class ObjectSpace {
 			connections[i].removeListener(invokeListener);
 
 		synchronized (instancesLock) {
-			ArrayList<Connection> temp = new ArrayList(
+			ArrayList<ObjectSpace> temp = new ArrayList(
 					Arrays.asList(instances));
 			temp.remove(this);
 			instances = temp.toArray(new ObjectSpace[temp.size()]);
@@ -501,6 +503,13 @@ public class ObjectSpace {
 						throw new IllegalStateException(
 								"There is no last response to wait for.");
 					return waitForResponse(lastResponseID);
+				} else if (name.equals("hasLastResponse")) {
+					if (lastResponseID == null)
+						throw new IllegalStateException(
+								"There is no last response.");
+					synchronized (this) {
+						return responseTable[lastResponseID] != null;
+					}
 				} else if (name.equals("getLastResponseID")) {
 					if (lastResponseID == null)
 						throw new IllegalStateException(
@@ -512,6 +521,10 @@ public class ObjectSpace {
 						throw new IllegalStateException(
 								"This RemoteObject is currently set to ignore all responses.");
 					return waitForResponse((Byte) args[0]);
+				} else if (name.equals("hasResponse")) {
+					synchronized (this) {
+						return responseTable[(Byte) args[0]] != null;
+					}
 				} else if (name.equals("getConnection")) {
 					return connection;
 				}

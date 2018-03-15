@@ -77,6 +77,8 @@ public interface EndPoint extends Runnable {
 	 * Gets the Kryo instance that will be used to serialize and deserialize
 	 * objects. This is only valid if {@link KryoSerialization} is being used,
 	 * which is the default.
+	 * 
+	 * @return May be null.
 	 */
 	public Kryo getKryo();
 }

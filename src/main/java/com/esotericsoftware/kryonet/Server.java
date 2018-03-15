@@ -164,7 +164,9 @@ public class Server implements EndPoint {
 	}
 
 	public Kryo getKryo() {
-		return ((KryoSerializationFactory) serializationFactory).getKryo();
+		return serializationFactory instanceof KryoSerializationFactory
+				? (((KryoSerializationFactory) serializationFactory).getKryo())
+				: null;
 	}
 
 	/**

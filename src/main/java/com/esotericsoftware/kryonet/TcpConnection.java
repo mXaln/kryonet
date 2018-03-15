@@ -232,15 +232,17 @@ class TcpConnection {
 		if (socketChannel == null)
 			throw new SocketException("Connection is closed.");
 		synchronized (writeLock) {
-			// Leave room for length.
+
 			int start = writeBuffer.position();
 			int lengthLength = serialization.getLengthLength();
-			writeBuffer.position(writeBuffer.position() + lengthLength);
 
-			// Write data.
 			try {
+				// Leave room for length.
+				writeBuffer.position(writeBuffer.position() + lengthLength);
+
+				// Write data.
 				serialization.write(writeBuffer, object);
-			} catch (KryoNetException ex) {
+			} catch (Throwable ex) {
 				throw new KryoNetException("Error serializing object of type: "
 						+ object.getClass().getName(), ex);
 			}

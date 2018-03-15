@@ -147,7 +147,9 @@ public class Client extends Connection implements EndPoint {
 	}
 
 	public Kryo getKryo() {
-		return ((KryoSerialization) serialization).getKryo();
+		return serialization instanceof KryoSerialization
+				? (((KryoSerialization) serialization).getKryo())
+				: null;
 	}
 
 	/**

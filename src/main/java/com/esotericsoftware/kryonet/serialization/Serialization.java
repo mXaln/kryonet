@@ -26,7 +26,7 @@ import java.nio.ByteBuffer;
  * <p>
  * Every client connection on the server uses a separate instance for TCP
  * transmissions and the <i>same</i> instance for UDP ones. Therefore all
- * implementing classes should be thread-safe.
+ * implementing classes have to be synchronized or made thread-safe otherwise.
  */
 public interface Serialization {
 
