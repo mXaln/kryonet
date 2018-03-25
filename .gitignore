@@ -11,7 +11,10 @@ target/
 local.properties
 .gradle/
 gradle-app.setting
+/gradle/
 /build/
+gradlew
+gradlew.bat
 
 ## OS Specific
 .DS_Store
