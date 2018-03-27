@@ -19,7 +19,7 @@
 
 package com.esotericsoftware.kryonet;
 
-import static com.esotericsoftware.minlog.Log.*;
+import static com.esotericsoftware.minlog.Log.info;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -28,7 +28,6 @@ import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 
-import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryo.io.Input;
 
 public class DiscoverHostTest extends KryoNetTestCase {
@@ -84,8 +83,7 @@ public class DiscoverHostTest extends KryoNetTestCase {
 				packet.playerName = "playerName";
 
 				ByteBuffer buffer = ByteBuffer.allocate(256);
-				server.getSerializationFactory().newInstance(null).write(buffer,
-						packet);
+				client.getSerialization().write(buffer, packet);
 				buffer.flip();
 
 				datagramChannel.send(buffer, fromAddress);

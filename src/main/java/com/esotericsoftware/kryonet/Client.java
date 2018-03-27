@@ -578,6 +578,10 @@ public class Client extends Connection implements EndPoint {
 		return updateThread;
 	}
 
+	public Serialization getSerialization() {
+		return serialization;
+	}
+
 	private void broadcast(int udpPort, DatagramSocket socket)
 			throws IOException {
 		ByteBuffer dataBuffer = ByteBuffer.allocate(64);

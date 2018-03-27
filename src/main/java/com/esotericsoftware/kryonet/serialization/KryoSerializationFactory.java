@@ -18,6 +18,9 @@ public class KryoSerializationFactory implements SerializationFactory {
 
 	public KryoSerializationFactory() {
 		this(new Kryo());
+
+		kryo.setReferences(false);
+		kryo.setRegistrationRequired(true);
 	}
 
 	public KryoSerializationFactory(Kryo kryo) {
@@ -45,8 +48,6 @@ public class KryoSerializationFactory implements SerializationFactory {
 
 		public KryoSerialization(Connection connection, Kryo kryo) {
 			this(kryo);
-			kryo.setReferences(false);
-			kryo.setRegistrationRequired(true);
 
 			kryo.getContext().put("connection", connection);
 		}
