@@ -19,9 +19,15 @@ import com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP;
 
 public class JsonSerializationFactory implements SerializationFactory {
 
+	private final Serialization INSTANCE;
+
 	@Override
 	public Serialization newInstance(Connection connection) {
-		return new JsonSerialization();
+		return INSTANCE;
+	}
+
+	public JsonSerializationFactory() {
+		this.INSTANCE = new JsonSerialization();
 	}
 
 	public class JsonSerialization implements Serialization {

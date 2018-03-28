@@ -93,7 +93,7 @@ abstract public class KryoNetTestCase extends TestCase {
 				fail = true;
 			}
 		};
-		timer.schedule(failTask, 11000);
+		timer.schedule(failTask, 13000);
 		while (true) {
 			for (Iterator iter = threads.iterator(); iter.hasNext();) {
 				Thread thread = (Thread)iter.next();

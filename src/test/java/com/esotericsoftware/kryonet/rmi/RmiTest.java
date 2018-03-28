@@ -38,8 +38,6 @@ public class RmiTest extends KryoNetTestCase {
 	 * other features.
 	 */
 	public void testRMI() throws IOException {
-		Log.set(Log.LEVEL_DEBUG);
-
 		Server server = new Server();
 		Kryo serverKryo = server.getKryo();
 		register(serverKryo);

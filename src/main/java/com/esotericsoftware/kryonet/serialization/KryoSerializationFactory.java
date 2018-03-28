@@ -11,10 +11,18 @@ import com.esotericsoftware.kryonet.FrameworkMessage.KeepAlive;
 import com.esotericsoftware.kryonet.FrameworkMessage.Ping;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterTCP;
 import com.esotericsoftware.kryonet.FrameworkMessage.RegisterUDP;
+import com.esotericsoftware.kryonet.serialization.JsonSerializationFactory.JsonSerialization;
 
 public class KryoSerializationFactory implements SerializationFactory {
 
 	private Kryo kryo;
+
+	private final KryoSerialization INSTANCE;
+
+	@Override
+	public Serialization newInstance(Connection connection) {
+		return INSTANCE;
+	}
 
 	public KryoSerializationFactory() {
 		this(new Kryo());
@@ -30,27 +38,18 @@ public class KryoSerializationFactory implements SerializationFactory {
 		this.kryo.register(KeepAlive.class);
 		this.kryo.register(DiscoverHost.class);
 		this.kryo.register(Ping.class);
+
+		this.INSTANCE = new KryoSerialization(kryo);
 	}
 
 	public Kryo getKryo() {
 		return kryo;
 	}
 
-	@Override
-	public Serialization newInstance(Connection connection) {
-		return new KryoSerialization(connection, kryo);
-	}
-
 	public class KryoSerialization implements Serialization {
 		private final Kryo kryo;
 		private final ByteBufferInput input;
 		private final ByteBufferOutput output;
-
-		public KryoSerialization(Connection connection, Kryo kryo) {
-			this(kryo);
-
-			kryo.getContext().put("connection", connection);
-		}
 
 		public KryoSerialization(Kryo kryo) {
 			this.kryo = kryo;

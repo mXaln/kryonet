@@ -8,7 +8,7 @@ This fork was specifically made for [ProjectGG](https://github.com/eskalon/Proje
 * A TypeListener for easier message handling (see the example below; also fixes [#130](https://github.com/EsotericSoftware/kryonet/issues/130))
 * Listener is now an interface ([#39](https://github.com/EsotericSoftware/kryonet/issues/39))
 * Kryo 4.0.1 is used for the serialization ([#77](https://github.com/EsotericSoftware/kryonet/issues/77); also fixes [#123](https://github.com/EsotericSoftware/kryonet/issues/123))
-* Fixes for the Android 5 and iOS crashes ([#106](https://github.com/EsotericSoftware/kryonet/issues/106))
+* Includes a fix for the common Android 5 crash ([#106](https://github.com/EsotericSoftware/kryonet/issues/106))
 * The LAN Host Discovery is now available to Non-Kryo-Serializations ([#127](https://github.com/EsotericSoftware/kryonet/issues/127))
 * A few other changes to serializations (see the respective paragraph below)
 * Kryonet now uses a [gradle](https://gradle.org/) build setup
@@ -35,8 +35,9 @@ server.addListener(typeListener);
 
 ## Changes to (Custom) Serializations
 
-* The serialization objects are created by [factories](https://github.com/crykn/kryonet/blob/master/src/main/java/com/esotericsoftware/kryonet/serialization/SerializationFactory.java)
-* The server now uses a serialization instance _per_ TCP connection (and still only one serialization instance for the UDP connections). This allows the server to keep responding while another message is serialized (see [#137](https://github.com/EsotericSoftware/kryonet/issues/137)).
+* The serialization objects are now created by [factories](https://github.com/crykn/kryonet/blob/master/src/main/java/com/esotericsoftware/kryonet/serialization/SerializationFactory.java): `SerializationFactory#newInstance(Connection)`
+* The in-built serializations still behave exactly the same (i.e. one serialization instance is used for the server)
+* Custom serializations on the other hand can now decide to only get used _once per TCP connection_ (all UDP connections still use one instance). This allows the server to keep responding while a message for another connection is still being serialized (see [#137](https://github.com/EsotericSoftware/kryonet/issues/137)).
 
 ## Download
 
@@ -52,6 +53,6 @@ allprojects {
 }
 	
 dependencies {
-   compile 'com.github.crykn:kryonet:2.22.1'
+   compile 'com.github.crykn:kryonet:2.22.2'
 }
 ```
