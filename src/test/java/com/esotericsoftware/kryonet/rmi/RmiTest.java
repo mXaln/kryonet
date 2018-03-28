@@ -25,13 +25,21 @@ import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.KryoNetTestCase;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.minlog.Log;
 
 import java.io.IOException;
+import java.util.Collections;
 
 public class RmiTest extends KryoNetTestCase {
-	/** In this test both the client and server have an ObjectSpace that contains a TestObject. When the client connects, the same
-	 * test is run on both the client and server. The test excersizes a number of remote method calls and other features. */
-	public void testRMI () throws IOException {
+	/**
+	 * In this test both the client and server have an ObjectSpace that contains
+	 * a TestObject. When the client connects, the same test is run on both the
+	 * client and server. The test exercises a number of remote method calls and
+	 * other features.
+	 */
+	public void testRMI() throws IOException {
+		Log.set(Log.LEVEL_DEBUG);
+
 		Server server = new Server();
 		Kryo serverKryo = server.getKryo();
 		register(serverKryo);
@@ -45,16 +53,17 @@ public class RmiTest extends KryoNetTestCase {
 		serverObjectSpace.register(42, serverTestObject);
 
 		server.addListener(new Listener() {
-			public void connected (final Connection connection) {
+			public void connected(final Connection connection) {
 				serverObjectSpace.addConnection(connection);
 				runTest(connection, 12, 1234);
 			}
 
-			public void received (Connection connection, Object object) {
-				if (!(object instanceof MessageWithTestObject)) return;
-				MessageWithTestObject m = (MessageWithTestObject)object;
+			public void received(Connection connection, Object object) {
+				if (!(object instanceof MessageWithTestObject))
+					return;
+				MessageWithTestObject m = (MessageWithTestObject) object;
 				System.out.println(serverTestObject.value);
-				System.out.println(((TestObjectImpl)m.testObject).value);
+				System.out.println(((TestObjectImpl) m.testObject).value);
 				assertEquals(4321f, m.testObject.other());
 				stopEndPoints(2000);
 			}
@@ -71,15 +80,16 @@ public class RmiTest extends KryoNetTestCase {
 
 		startEndPoint(client);
 		client.addListener(new Listener() {
-			public void connected (final Connection connection) {
+			public void connected(final Connection connection) {
 				runTest(connection, 42, 4321);
 			}
 
-			public void received (Connection connection, Object object) {
-				if (!(object instanceof MessageWithTestObject)) return;
-				MessageWithTestObject m = (MessageWithTestObject)object;
+			public void received(Connection connection, Object object) {
+				if (!(object instanceof MessageWithTestObject))
+					return;
+				MessageWithTestObject m = (MessageWithTestObject) object;
 				System.out.println(clientTestObject.value);
-				System.out.println(((TestObjectImpl)m.testObject).value);
+				System.out.println(((TestObjectImpl) m.testObject).value);
 				assertEquals(1234f, m.testObject.other());
 				stopEndPoints(2000);
 			}
@@ -87,7 +97,7 @@ public class RmiTest extends KryoNetTestCase {
 		client.connect(5000, host, tcpPort, udpPort);
 
 		waitForThreads();
-		
+
 		server.stop();
 		server.close();
 	}
@@ -259,6 +269,7 @@ public class RmiTest extends KryoNetTestCase {
 	static public void register(Kryo kryo) {
 		kryo.register(Object.class); // Needed for Object#toString, hashCode,
 										// etc.
+		kryo.register(Collections.EMPTY_LIST.getClass());
 		kryo.register(TestObject.class);
 		kryo.register(MessageWithTestObject.class);
 		kryo.register(StackTraceElement.class);
