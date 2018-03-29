@@ -7,7 +7,7 @@ This fork was specifically made for [ProjectGG](https://github.com/eskalon/Proje
 ## Key Changes
 * A TypeListener for easier message handling (see the example below; also fixes [#130](https://github.com/EsotericSoftware/kryonet/issues/130))
 * Listener is now an interface ([#39](https://github.com/EsotericSoftware/kryonet/issues/39))
-* Kryo 4.0.1 is used for the serialization ([#77](https://github.com/EsotericSoftware/kryonet/issues/77); also fixes [#123](https://github.com/EsotericSoftware/kryonet/issues/123))
+* Kryo 4.0.2 is used for the serialization ([#77](https://github.com/EsotericSoftware/kryonet/issues/77); also fixes [#123](https://github.com/EsotericSoftware/kryonet/issues/123))
 * Includes a fix for the common Android 5 crash ([#106](https://github.com/EsotericSoftware/kryonet/issues/106))
 * The LAN Host Discovery is now available to Non-Kryo-Serializations ([#127](https://github.com/EsotericSoftware/kryonet/issues/127))
 * A few other changes to serializations (see the respective paragraph below)
