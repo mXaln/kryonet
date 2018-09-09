@@ -545,10 +545,10 @@ public class Server implements EndPoint {
 	public void stop() {
 		if (shutdown)
 			return;
+		shutdown = true;
 		close();
 		if (TRACE)
 			trace("kryonet", "Server thread stopping.");
-		shutdown = true;
 	}
 
 	private void acceptOperation(SocketChannel socketChannel) {
