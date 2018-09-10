@@ -266,7 +266,7 @@ public class Server implements EndPoint {
 			Set<SelectionKey> keys = selector.selectedKeys();
 			synchronized (keys) {
 				UdpConnection udp = this.udp;
-				outer : for (Iterator<SelectionKey> iter = keys.iterator(); iter
+				outer: for (Iterator<SelectionKey> iter = keys.iterator(); iter
 						.hasNext();) {
 					keepAlive();
 					SelectionKey selectionKey = iter.next();
@@ -296,15 +296,13 @@ public class Server implements EndPoint {
 													: object.getClass()
 															.getSimpleName();
 											if (!(object instanceof FrameworkMessage)) {
-												debug("kryonet",
-														fromConnection
-																+ " received TCP: "
-																+ objectString);
+												debug("kryonet", fromConnection
+														+ " received TCP: "
+														+ objectString);
 											} else if (TRACE) {
-												trace("kryonet",
-														fromConnection
-																+ " received TCP: "
-																+ objectString);
+												trace("kryonet", fromConnection
+														+ " received TCP: "
+														+ objectString);
 											}
 										}
 										fromConnection.notifyReceived(object);
@@ -465,8 +463,7 @@ public class Server implements EndPoint {
 
 						if (fromConnection != null) {
 							if (DEBUG) {
-								String objectString = object == null
-										? "null"
+								String objectString = object == null ? "null"
 										: object.getClass().getSimpleName();
 								if (object instanceof FrameworkMessage) {
 									if (TRACE)

@@ -33,13 +33,13 @@ import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
 
 public class DeflateTest extends KryoNetTestCase {
-	public void testDeflate () throws IOException {
+	public void testDeflate() throws IOException {
 		final Server server = new Server();
 		register(server.getKryo());
 
 		final SomeData data = new SomeData();
 		data.text = "some text here aaaaaaaaaabbbbbbbbbbbcccccccccc";
-		data.stuff = new short[] {1, 2, 3, 4, 5, 6, 7, 8};
+		data.stuff = new short[] { 1, 2, 3, 4, 5, 6, 7, 8 };
 
 		final ArrayList a = new ArrayList();
 		a.add(12);
@@ -49,7 +49,7 @@ public class DeflateTest extends KryoNetTestCase {
 		startEndPoint(server);
 		server.bind(tcpPort, udpPort);
 		server.addListener(new Listener() {
-			public void connected (Connection connection) {
+			public void connected(Connection connection) {
 				server.sendToAllTCP(data);
 				connection.sendTCP(data);
 				connection.sendTCP(a);
@@ -62,9 +62,9 @@ public class DeflateTest extends KryoNetTestCase {
 		register(client.getKryo());
 		startEndPoint(client);
 		client.addListener(new Listener() {
-			public void received (Connection connection, Object object) {
+			public void received(Connection connection, Object object) {
 				if (object instanceof SomeData) {
-					SomeData data = (SomeData)object;
+					SomeData data = (SomeData) object;
 					System.out.println(data.stuff[3]);
 				} else if (object instanceof ArrayList) {
 					stopEndPoints();
@@ -76,9 +76,10 @@ public class DeflateTest extends KryoNetTestCase {
 		waitForThreads();
 	}
 
-	static public void register (Kryo kryo) {
+	static public void register(Kryo kryo) {
 		kryo.register(short[].class);
-		kryo.register(SomeData.class, new DeflateSerializer(new FieldSerializer(kryo, SomeData.class)));
+		kryo.register(SomeData.class, new DeflateSerializer(
+				new FieldSerializer(kryo, SomeData.class)));
 		kryo.register(ArrayList.class, new CollectionSerializer());
 	}
 

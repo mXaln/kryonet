@@ -125,7 +125,7 @@ public interface Listener {
 				BiConsumer<? super Connection, ? super T> listener) {
 			listeners.put(clazz, listener);
 		}
-		
+
 	}
 
 	/**

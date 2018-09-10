@@ -12,7 +12,8 @@ public interface SerializationFactory {
 	 * 
 	 * @param connection
 	 *            If the serialization is used for TCP: The connection to the
-	 *            other endpoint. If the serialization is used for UDP: null.
+	 *            other endpoint. If the serialization is used for UDP:
+	 *            <code>null</code>.
 	 * @return The serialization.
 	 */
 	public Serialization newInstance(Connection connection);

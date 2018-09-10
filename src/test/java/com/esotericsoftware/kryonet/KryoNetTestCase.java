@@ -24,10 +24,10 @@ import java.util.Iterator;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import junit.framework.TestCase;
-
 import com.esotericsoftware.minlog.Log;
 import com.esotericsoftware.minlog.Log.Logger;
+
+import junit.framework.TestCase;
 
 abstract public class KryoNetTestCase extends TestCase {
 	static public String host = "localhost";
@@ -38,40 +38,42 @@ abstract public class KryoNetTestCase extends TestCase {
 	private Timer timer;
 	boolean fail;
 
-	public KryoNetTestCase () {
+	public KryoNetTestCase() {
 		// Log.TRACE();
 		// Log.DEBUG();
 		Log.setLogger(new Logger() {
-			public void log (int level, String category, String message, Throwable ex) {
+			public void log(int level, String category, String message,
+					Throwable ex) {
 				// if (category == null || category.equals("kryonet")) //
 				super.log(level, category, message, ex);
 			}
 		});
 	}
 
-	protected void setUp () throws Exception {
+	protected void setUp() throws Exception {
 		System.out.println("---- " + getClass().getSimpleName());
 		timer = new Timer();
 	}
 
-	protected void tearDown () throws Exception {
+	protected void tearDown() throws Exception {
 		timer.cancel();
 	}
 
-	public void startEndPoint (EndPoint endPoint) {
+	public void startEndPoint(EndPoint endPoint) {
 		endPoints.add(endPoint);
-		Thread thread = new Thread(endPoint, endPoint.getClass().getSimpleName());
+		Thread thread = new Thread(endPoint,
+				endPoint.getClass().getSimpleName());
 		threads.add(thread);
 		thread.start();
 	}
 
-	public void stopEndPoints () {
+	public void stopEndPoints() {
 		stopEndPoints(0);
 	}
 
-	public void stopEndPoints (int stopAfterMillis) {
+	public void stopEndPoints(int stopAfterMillis) {
 		timer.schedule(new TimerTask() {
-			public void run () {
+			public void run() {
 				for (EndPoint endPoint : endPoints)
 					endPoint.stop();
 				endPoints.clear();
@@ -79,16 +81,18 @@ abstract public class KryoNetTestCase extends TestCase {
 		}, stopAfterMillis);
 	}
 
-	public void waitForThreads (int stopAfterMillis) {
-		if (stopAfterMillis > 10000) throw new IllegalArgumentException("stopAfterMillis must be < 10000");
+	public void waitForThreads(int stopAfterMillis) {
+		if (stopAfterMillis > 10000)
+			throw new IllegalArgumentException(
+					"stopAfterMillis must be < 10000");
 		stopEndPoints(stopAfterMillis);
 		waitForThreads();
 	}
 
-	public void waitForThreads () {
+	public void waitForThreads() {
 		fail = false;
 		TimerTask failTask = new TimerTask() {
-			public void run () {
+			public void run() {
 				stopEndPoints();
 				fail = true;
 			}
@@ -96,17 +100,20 @@ abstract public class KryoNetTestCase extends TestCase {
 		timer.schedule(failTask, 13000);
 		while (true) {
 			for (Iterator iter = threads.iterator(); iter.hasNext();) {
-				Thread thread = (Thread)iter.next();
-				if (!thread.isAlive()) iter.remove();
+				Thread thread = (Thread) iter.next();
+				if (!thread.isAlive())
+					iter.remove();
 			}
-			if (threads.isEmpty()) break;
+			if (threads.isEmpty())
+				break;
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException ignored) {
 			}
 		}
 		failTask.cancel();
-		if (fail) fail("Test did not complete in a timely manner.");
+		if (fail)
+			fail("Test did not complete in a timely manner.");
 		// Give sockets a chance to close before starting the next test.
 		try {
 			Thread.sleep(1000);

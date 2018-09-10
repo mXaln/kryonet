@@ -19,16 +19,15 @@
 
 package com.esotericsoftware.kryonet.rmi;
 
+import java.io.IOException;
+import java.util.Collections;
+
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.KryoNetTestCase;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Server;
-import com.esotericsoftware.minlog.Log;
-
-import java.io.IOException;
-import java.util.Collections;
 
 public class RmiTest extends KryoNetTestCase {
 	/**

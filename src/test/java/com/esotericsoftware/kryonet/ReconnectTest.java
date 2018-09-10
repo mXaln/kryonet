@@ -25,16 +25,16 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ReconnectTest extends KryoNetTestCase {
-	public void testReconnect () throws IOException {
+	public void testReconnect() throws IOException {
 		final Timer timer = new Timer();
 
 		final Server server = new Server();
 		startEndPoint(server);
 		server.bind(tcpPort);
 		server.addListener(new Listener() {
-			public void connected (final Connection connection) {
+			public void connected(final Connection connection) {
 				timer.schedule(new TimerTask() {
-					public void run () {
+					public void run() {
 						System.out.println("Disconnecting after 2 seconds.");
 						connection.close();
 					}
@@ -48,15 +48,16 @@ public class ReconnectTest extends KryoNetTestCase {
 		final Client client = new Client();
 		startEndPoint(client);
 		client.addListener(new Listener() {
-			public void disconnected (Connection connection) {
+			public void disconnected(Connection connection) {
 				if (reconnetCount.getAndIncrement() == 2) {
 					stopEndPoints();
 					return;
 				}
 				new Thread() {
-					public void run () {
+					public void run() {
 						try {
-							System.out.println("Reconnecting: " + reconnetCount.get());
+							System.out.println(
+									"Reconnecting: " + reconnetCount.get());
 							client.reconnect();
 						} catch (IOException ex) {
 							ex.printStackTrace();

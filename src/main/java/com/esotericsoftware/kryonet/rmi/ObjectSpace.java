@@ -19,22 +19,12 @@
 
 package com.esotericsoftware.kryonet.rmi;
 
-import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryo.KryoException;
-import com.esotericsoftware.kryo.KryoSerializable;
-import com.esotericsoftware.kryo.Serializer;
-import com.esotericsoftware.kryo.io.Input;
-import com.esotericsoftware.kryo.io.Output;
-import com.esotericsoftware.kryo.serializers.FieldSerializer;
-import com.esotericsoftware.kryo.util.IntMap;
-import com.esotericsoftware.kryo.util.Util;
-import com.esotericsoftware.kryonet.Connection;
-import com.esotericsoftware.kryonet.EndPoint;
-import com.esotericsoftware.kryonet.FrameworkMessage;
-import com.esotericsoftware.kryonet.KryoNetException;
-import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.kryonet.util.ObjectIntMap;
-import com.esotericsoftware.reflectasm.MethodAccess;
+import static com.esotericsoftware.minlog.Log.DEBUG;
+import static com.esotericsoftware.minlog.Log.TRACE;
+import static com.esotericsoftware.minlog.Log.WARN;
+import static com.esotericsoftware.minlog.Log.debug;
+import static com.esotericsoftware.minlog.Log.trace;
+import static com.esotericsoftware.minlog.Log.warn;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -51,12 +41,23 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static com.esotericsoftware.minlog.Log.DEBUG;
-import static com.esotericsoftware.minlog.Log.TRACE;
-import static com.esotericsoftware.minlog.Log.WARN;
-import static com.esotericsoftware.minlog.Log.debug;
-import static com.esotericsoftware.minlog.Log.trace;
-import static com.esotericsoftware.minlog.Log.warn;
+import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.KryoException;
+import com.esotericsoftware.kryo.KryoSerializable;
+import com.esotericsoftware.kryo.Serializer;
+import com.esotericsoftware.kryo.io.Input;
+import com.esotericsoftware.kryo.io.Output;
+import com.esotericsoftware.kryo.serializers.FieldSerializer;
+import com.esotericsoftware.kryo.util.IntMap;
+import com.esotericsoftware.kryo.util.Util;
+import com.esotericsoftware.kryonet.Connection;
+import com.esotericsoftware.kryonet.EndPoint;
+import com.esotericsoftware.kryonet.FrameworkMessage;
+import com.esotericsoftware.kryonet.KryoNetException;
+import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.serialization.KryoSerializationFactory.KryoSerialization;
+import com.esotericsoftware.kryonet.util.ObjectIntMap;
+import com.esotericsoftware.reflectasm.MethodAccess;
 
 /**
  * Allows methods on objects to be invoked remotely over TCP or UDP. Objects are
@@ -367,7 +368,7 @@ public class ObjectSpace {
 	 */
 	static public <T> T getRemoteObject(final Connection connection,
 			int objectID, Class<T> iface) {
-		return (T) getRemoteObject(connection, objectID, new Class[]{iface});
+		return (T) getRemoteObject(connection, objectID, new Class[] { iface });
 	}
 
 	/**
@@ -577,8 +578,7 @@ public class ObjectSpace {
 				invokeMethod.responseData = 0; // A response data of 0 means to
 												// not respond.
 			}
-			int length = udp
-					? connection.sendUDP(invokeMethod)
+			int length = udp ? connection.sendUDP(invokeMethod)
 					: connection.sendTCP(invokeMethod);
 			if (DEBUG) {
 				String argString = "";
@@ -679,9 +679,7 @@ public class ObjectSpace {
 	 * Internal message to invoke methods remotely.
 	 */
 	static public class InvokeMethod
-			implements
-				FrameworkMessage,
-				KryoSerializable {
+			implements FrameworkMessage, KryoSerializable {
 		public int objectID;
 		public CachedMethod cachedMethod;
 		public Object[] args;
@@ -868,8 +866,8 @@ public class ObjectSpace {
 
 	/**
 	 * Returns the first ID registered for the specified object with any of the
-	 * ObjectSpaces the specified connection belongs to, or Integer.MAX_VALUE if
-	 * not found.
+	 * ObjectSpaces the specified connection belongs to, or
+	 * <code>Integer.MAX_VALUE</code> if not found.
 	 */
 	static int getRegisteredID(Connection connection, Object object) {
 		ObjectSpace[] instances = ObjectSpace.instances;

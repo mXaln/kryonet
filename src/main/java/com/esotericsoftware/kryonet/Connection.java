@@ -114,8 +114,7 @@ public class Connection {
 				if (TRACE)
 					trace("kryonet", this + " TCP had nothing to send.");
 			} else if (DEBUG) {
-				String objectString = object == null
-						? "null"
+				String objectString = object == null ? "null"
 						: object.getClass().getSimpleName();
 				if (!(object instanceof FrameworkMessage)) {
 					debug("kryonet", this + " sent TCP: " + objectString + " ("
@@ -169,8 +168,7 @@ public class Connection {
 					trace("kryonet", this + " UDP had nothing to send.");
 			} else if (DEBUG) {
 				if (length != -1) {
-					String objectString = object == null
-							? "null"
+					String objectString = object == null ? "null"
 							: object.getClass().getSimpleName();
 					if (!(object instanceof FrameworkMessage)) {
 						debug("kryonet", this + " sent UDP: " + objectString

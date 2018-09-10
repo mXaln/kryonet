@@ -24,7 +24,8 @@ import java.lang.Thread.UncaughtExceptionHandler;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class KryoNetBufferUnderflowTest {
-	public static void main (String[] args) throws IOException, InterruptedException {
+	public static void main(String[] args)
+			throws IOException, InterruptedException {
 		final int port = 7000;
 		final int writeBufferSize = 16384;
 		final int objectBufferSize = 2048;
@@ -41,7 +42,7 @@ public class KryoNetBufferUnderflowTest {
 		client.start();
 		client.addListener(new Listener() {
 			@Override
-			public void received (Connection connection, Object object) {
+			public void received(Connection connection, Object object) {
 				if (object instanceof String) {
 					System.out.println("Received: " + object);
 					received.set(true);
@@ -53,17 +54,18 @@ public class KryoNetBufferUnderflowTest {
 		System.out.println("Client connected");
 
 		// Catching exception
-		Thread.setDefaultUncaughtExceptionHandler(new UncaughtExceptionHandler() {
-			@Override
-			public void uncaughtException (Thread t, Throwable e) {
-				e.printStackTrace();
-				received.set(true);
-				// Stopping it all
-				System.out.println("Stopping client and server");
-				client.stop();
-				server.stop();
-			}
-		});
+		Thread.setDefaultUncaughtExceptionHandler(
+				new UncaughtExceptionHandler() {
+					@Override
+					public void uncaughtException(Thread t, Throwable e) {
+						e.printStackTrace();
+						received.set(true);
+						// Stopping it all
+						System.out.println("Stopping client and server");
+						client.stop();
+						server.stop();
+					}
+				});
 
 		// Sending small messages
 		for (int i = 0; i < 5; i++) {
@@ -78,7 +80,8 @@ public class KryoNetBufferUnderflowTest {
 
 		// Sending large message
 		String bigMessage = "RandomStringUtils.randomAlphanumeric(532)RandomStringUtils.randomAlphanumeric(532)RandomStringUtils.randomAlphanumeric(532)RandomStringUtils.randomAlphanumeric(532)RandomStringUtils.randomAlphanumeric(532)RandomStringUtils.randomAlphanumeric(532)RandomStringUtils.randomAlphanumeric(532)";
-		bigMessage = bigMessage + bigMessage + bigMessage + bigMessage + bigMessage + bigMessage + bigMessage;
+		bigMessage = bigMessage + bigMessage + bigMessage + bigMessage
+				+ bigMessage + bigMessage + bigMessage;
 		System.out.println("Sending: " + bigMessage);
 		received.set(false);
 		server.sendToAllTCP(bigMessage);

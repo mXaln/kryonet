@@ -28,7 +28,7 @@ public class BufferTest extends KryoNetTestCase {
 	AtomicInteger received = new AtomicInteger();
 	AtomicInteger receivedBytes = new AtomicInteger();
 
-	public void testManyLargeMessages () throws IOException {
+	public void testManyLargeMessages() throws IOException {
 		final int messageCount = 1024;
 		int objectBufferSize = 10250;
 		int writeBufferSize = 10250 * messageCount;
@@ -42,18 +42,23 @@ public class BufferTest extends KryoNetTestCase {
 			AtomicInteger received = new AtomicInteger();
 			AtomicInteger receivedBytes = new AtomicInteger();
 
-			public void received (Connection connection, Object object) {
+			public void received(Connection connection, Object object) {
 				if (object instanceof LargeMessage) {
-					System.out.println("Server sending message: " + received.get());
+					System.out.println(
+							"Server sending message: " + received.get());
 					connection.sendTCP(object);
 
-					receivedBytes.addAndGet(((LargeMessage)object).bytes.length);
+					receivedBytes
+							.addAndGet(((LargeMessage) object).bytes.length);
 
 					int count = received.incrementAndGet();
-					System.out.println("Server received " + count + " messages.");
+					System.out
+							.println("Server received " + count + " messages.");
 					if (count == messageCount) {
-						System.out.println("Server received all " + messageCount + " messages!");
-						System.out.println("Server received and sent " + receivedBytes.get() + " bytes.");
+						System.out.println("Server received all " + messageCount
+								+ " messages!");
+						System.out.println("Server received and sent "
+								+ receivedBytes.get() + " bytes.");
 					}
 				}
 			}
@@ -68,13 +73,16 @@ public class BufferTest extends KryoNetTestCase {
 			AtomicInteger received = new AtomicInteger();
 			AtomicInteger receivedBytes = new AtomicInteger();
 
-			public void received (Connection connection, Object object) {
+			public void received(Connection connection, Object object) {
 				if (object instanceof LargeMessage) {
 					int count = received.incrementAndGet();
-					System.out.println("Client received " + count + " messages.");
+					System.out
+							.println("Client received " + count + " messages.");
 					if (count == messageCount) {
-						System.out.println("Client received all " + messageCount + " messages!");
-						System.out.println("Client received and sent " + receivedBytes.get() + " bytes.");
+						System.out.println("Client received all " + messageCount
+								+ " messages!");
+						System.out.println("Client received and sent "
+								+ receivedBytes.get() + " bytes.");
 						stopEndPoints();
 					}
 				}
@@ -91,7 +99,7 @@ public class BufferTest extends KryoNetTestCase {
 		waitForThreads(5000);
 	}
 
-	private void register (Kryo kryo) {
+	private void register(Kryo kryo) {
 		kryo.register(byte[].class);
 		kryo.register(LargeMessage.class);
 	}
@@ -99,10 +107,10 @@ public class BufferTest extends KryoNetTestCase {
 	public static class LargeMessage {
 		public byte[] bytes;
 
-		public LargeMessage () {
+		public LargeMessage() {
 		}
 
-		public LargeMessage (byte[] bytes) {
+		public LargeMessage(byte[] bytes) {
 			this.bytes = bytes;
 		}
 	}
