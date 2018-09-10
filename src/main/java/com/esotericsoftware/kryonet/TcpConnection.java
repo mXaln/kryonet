@@ -225,7 +225,13 @@ class TcpConnection {
 	}
 
 	/**
-	 * This method is thread safe.
+	 * Sends the given object via this connection. The object is serialized by
+	 * the specified {@link #serialization}.
+	 * <p>
+	 * This method is thread-safe.
+	 * 
+	 * @param object
+	 *            the object to send.
 	 */
 	public int send(Object object) throws IOException {
 		SocketChannel socketChannel = this.socketChannel;

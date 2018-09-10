@@ -90,16 +90,19 @@ public interface Listener {
 	}
 
 	/**
-	 * A type listener for kryonet. Note this class uses a HashMap lookup, so is
-	 * not as efficient as writing a series of "instanceof" statements.
+	 * A type listener for KryoNet for conveniently taking care of received
+	 * objects.
 	 * <p>
-	 * Add a handler for a specific type via
+	 * Note that this class uses a HashMap lookup, so is not as efficient as
+	 * writing a series of simple "instanceof" statements.
+	 * <p>
+	 * To add a handler for a specific type use
 	 * {@link #addHandler(Class, BiConsumer)}.
 	 */
 	static public class TypeListener implements Listener {
 
 		/**
-		 * All type listeners.
+		 * All type handlers.
 		 */
 		private final HashMap<Class<?>, BiConsumer> listeners = new HashMap<>();
 
@@ -191,7 +194,8 @@ public interface Listener {
 		}
 
 		/**
-		 * Uses the specified threadPool to process notification events.
+		 * Uses the specified <code>threadPool</code> to process notification
+		 * events.
 		 */
 		public ThreadedListener(Listener listener, ExecutorService threadPool) {
 			super(listener);

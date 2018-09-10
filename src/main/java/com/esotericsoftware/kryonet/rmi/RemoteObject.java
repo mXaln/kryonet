@@ -31,7 +31,7 @@ import com.esotericsoftware.kryonet.Connection;
 public interface RemoteObject {
 	/**
 	 * Sets the milliseconds to wait for a method to return value. Default is
-	 * 3000.
+	 * <code>3000</code>.
 	 */
 	public void setResponseTimeout(int timeoutMillis);
 
@@ -55,21 +55,21 @@ public interface RemoteObject {
 
 	/**
 	 * Sets whether return values are sent back when invoking a remote method.
-	 * Default is true.
+	 * Default is <code>true</code>.
 	 *
 	 * @param transmit
 	 *            If true, then the return value for non-blocking method
 	 *            invocations can be retrieved with
 	 *            {@link #waitForLastResponse()} or
-	 *            {@link #waitForResponse(byte)}. If false, then non-primitive
-	 *            return values for remote method invocations are not sent by
-	 *            the remote side of the connection and the response can never
-	 *            be retrieved. This can also be used to save bandwidth if you
-	 *            will not check the return value of a blocking remote
-	 *            invocation. Note that an exception could still be returned by
-	 *            {@link #waitForLastResponse()} or
+	 *            {@link #waitForResponse(byte)}. If <code>false</code>, then
+	 *            non-primitive return values for remote method invocations are
+	 *            not sent by the remote side of the connection and the response
+	 *            can never be retrieved. This can also be used to save
+	 *            bandwidth if you will not check the return value of a blocking
+	 *            remote invocation. Note that an exception could still be
+	 *            returned by {@link #waitForLastResponse()} or
 	 *            {@link #waitForResponse(byte)} if
-	 *            {@link #setTransmitExceptions(boolean)} is true.
+	 *            {@link #setTransmitExceptions(boolean)} is <code>true</code>.
 	 */
 	public void setTransmitReturnValue(boolean transmit);
 
@@ -80,11 +80,12 @@ public interface RemoteObject {
 	 * @param transmit
 	 *            If false, exceptions will be unhandled and rethrown as
 	 *            RuntimeExceptions inside the invoking thread. This is the
-	 *            legacy behavior. If true, behavior is dependent on whether
-	 *            {@link #setNonBlocking(boolean)}. If non-blocking is true, the
-	 *            exception will be serialized and sent back to the call site of
-	 *            the remotely invoked method, where it will be re-thrown. If
-	 *            non-blocking is false, an exception will not be thrown in the
+	 *            legacy behavior. If <code>true</code>, behavior is dependent
+	 *            on whether {@link #setNonBlocking(boolean)}. If non-blocking
+	 *            is <code>true</code>, the exception will be serialized and
+	 *            sent back to the call site of the remotely invoked method,
+	 *            where it will be re-thrown. If non-blocking is
+	 *            <code>false</code>, an exception will not be thrown in the
 	 *            calling thread but instead can be retrieved with
 	 *            {@link #waitForLastResponse()} or
 	 *            {@link #waitForResponse(byte)}, similar to a return value.
@@ -101,7 +102,7 @@ public interface RemoteObject {
 	/**
 	 * If set to false, calls to {@link Object#toString()} will return
 	 * {@literal "<proxy>"} instead of invoking the remote method. Default is
-	 * false.
+	 * <code>false</code>.
 	 */
 	public void setRemoteToString(boolean remoteToString);
 

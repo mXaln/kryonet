@@ -74,10 +74,9 @@ public class MultipleThreadTest extends KryoNetTestCase {
 		for (int i = 0; i < threads; i++) {
 			new Thread() {
 				public void run() {
-					Connection[] connections = server.getConnections();
 					for (int i = 0; i < messageCount; i++) {
-						for (int ii = 0, n = connections.length; ii < n; ii++)
-							connections[ii].sendTCP("message" + i);
+						for (Connection con : server.getConnections())
+							con.sendTCP("message" + i);
 						try {
 							Thread.sleep(sleepMillis);
 						} catch (InterruptedException ignored) {

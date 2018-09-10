@@ -64,7 +64,8 @@ public class ObjectIntMap<K> {
 
 	/**
 	 * Creates a new map with a load factor of 0.8. This map will hold
-	 * <i>initialCapacity * 0.8</i> items before growing the backing table.
+	 * <code>initialCapacity * 0.8</code> items before growing the backing
+	 * table.
 	 * 
 	 * @param initialCapacity
 	 *            The initial capacity of the map.
@@ -75,7 +76,7 @@ public class ObjectIntMap<K> {
 
 	/**
 	 * Creates a new map with the specified initial capacity and load factor.
-	 * This map will hold <i>initialCapacity * loadFactor</i> items before
+	 * This map will hold <code>initialCapacity * loadFactor</code> items before
 	 * growing the backing table.
 	 * 
 	 * @param initialCapacity

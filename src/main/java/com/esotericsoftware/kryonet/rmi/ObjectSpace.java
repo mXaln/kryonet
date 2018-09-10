@@ -183,7 +183,7 @@ public class ObjectSpace {
 	 * should not be registered in more than one of those ObjectSpaces.
 	 *
 	 * @param objectID
-	 *            Must not be Integer.MAX_VALUE.
+	 *            Must not be <code>Integer.MAX_VALUE</code>.
 	 * @see #getRemoteObject(Connection, int, Class...)
 	 */
 	public void register(int objectID, Object object) {

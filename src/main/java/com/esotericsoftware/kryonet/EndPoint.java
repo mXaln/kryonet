@@ -32,8 +32,11 @@ import com.esotericsoftware.kryonet.serialization.KryoSerializationFactory.KryoS
 public interface EndPoint extends Runnable {
 
 	/**
-	 * Adds a listener to the endpoint. If the listener already exists, it is
-	 * <i>not</i> added again.
+	 * Adds a listener to the connection. If the given listener was already
+	 * added before, it is ignored.
+	 * 
+	 * @param listener
+	 *            The listener to add.
 	 */
 	public void addListener(Listener listener);
 
@@ -74,11 +77,11 @@ public interface EndPoint extends Runnable {
 	public Thread getUpdateThread();
 
 	/**
-	 * Gets the Kryo instance that will be used to serialize and deserialize
-	 * objects. This is only valid if {@link KryoSerialization} is being used,
-	 * which is the default.
+	 * Gets the {@linkplain Kryo} instance that will be used to serialize and
+	 * deserialize objects. This is only valid if {@link KryoSerialization} is
+	 * being used, which is the default.
 	 * 
-	 * @return May be null.
+	 * @return May be <code>null</code>.
 	 */
 	public Kryo getKryo();
 }

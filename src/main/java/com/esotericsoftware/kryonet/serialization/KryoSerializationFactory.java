@@ -16,11 +16,11 @@ public class KryoSerializationFactory implements SerializationFactory {
 
 	private Kryo kryo;
 
-	private final KryoSerialization INSTANCE;
+	private final KryoSerialization SERIALIZATION_INSTANCE;
 
 	@Override
 	public Serialization newInstance(Connection connection) {
-		return INSTANCE;
+		return SERIALIZATION_INSTANCE;
 	}
 
 	public KryoSerializationFactory() {
@@ -38,7 +38,7 @@ public class KryoSerializationFactory implements SerializationFactory {
 		this.kryo.register(DiscoverHost.class);
 		this.kryo.register(Ping.class);
 
-		this.INSTANCE = new KryoSerialization(kryo);
+		this.SERIALIZATION_INSTANCE = new KryoSerialization(kryo);
 	}
 
 	public Kryo getKryo() {

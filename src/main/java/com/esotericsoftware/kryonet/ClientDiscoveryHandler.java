@@ -38,10 +38,12 @@ public interface ClientDiscoveryHandler {
 
 		@Override
 		public void onDiscoveredHost(DatagramPacket datagramPacket) {
+			// does nothing
 		}
 
 		@Override
 		public void onFinally() {
+			// does nothing
 		}
 
 	};

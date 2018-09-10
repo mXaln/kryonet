@@ -74,9 +74,9 @@ public class Connection {
 	}
 
 	/**
-	 * Returns the server assigned ID. Will return -1 if this connection has
-	 * never been connected or the last assigned ID if this connection has been
-	 * disconnected.
+	 * Returns the server assigned ID. Will return <code>-1</code> if this
+	 * connection has never been connected or the last assigned ID if this
+	 * connection has been disconnected.
 	 */
 	public int getID() {
 		return id;
@@ -91,9 +91,9 @@ public class Connection {
 	}
 
 	/**
-	 * Returns the last protocol error that occured on the connection.
+	 * Returns the last protocol error that occurred on the connection.
 	 *
-	 * @return The last protocol error or null if none error occured.
+	 * @return The last protocol error or null if none error occurred.
 	 */
 	public KryoNetException getLastProtocolError() {
 		return lastProtocolError;
@@ -240,7 +240,8 @@ public class Connection {
 	 * ensures that an abnormal close is detected in a reasonable amount of time
 	 * (see {@link #setTimeout(int)} ). Also, some network hardware will close a
 	 * TCP connection that ceases to transmit for a period of time (typically 1+
-	 * minutes). Set to zero to disable. Defaults to 8000.
+	 * minutes). Set to <code>0</code> to disable. Defaults to
+	 * <code>8000</code>.
 	 */
 	public void setKeepAliveTCP(int keepAliveMillis) {
 		tcp.keepAliveMillis = keepAliveMillis;
@@ -250,21 +251,21 @@ public class Connection {
 	 * If the specified amount of time passes without receiving an object over
 	 * TCP, the connection is considered closed. When a TCP socket is closed
 	 * normally, the remote end is notified immediately and this timeout is not
-	 * needed. However, if a socket is closed abnormally (eg, power loss),
+	 * needed. However, if a socket is closed abnormally (e.g. power loss),
 	 * KryoNet uses this timeout to detect the problem. The timeout should be
 	 * set higher than the {@link #setKeepAliveTCP(int) TCP keep alive} for the
 	 * remote end of the connection. The keep alive ensures that the remote end
 	 * of the connection will be constantly sending objects, and setting the
 	 * timeout higher than the keep alive allows for network latency. Set to
-	 * zero to disable. Defaults to 12000.
+	 * <code>0</code> to disable. Defaults to <code>12000</code>.
 	 */
 	public void setTimeout(int timeoutMillis) {
 		tcp.timeoutMillis = timeoutMillis;
 	}
 
 	/**
-	 * Adds a listener to the connection. If the listener already exists, it is
-	 * not added again.
+	 * Adds a listener to the connection. If the given listener was already
+	 * added before, it is ignored.
 	 * 
 	 * @param listener
 	 *            The listener to add.
@@ -392,7 +393,7 @@ public class Connection {
 
 	/**
 	 * Returns the IP address and port of the remote end of the UDP connection,
-	 * or null if this connection is not connected.
+	 * or <code>null</code> if this connection is not connected.
 	 */
 	public InetSocketAddress getRemoteAddressUDP() {
 		InetSocketAddress connectedAddress = udp.connectedAddress;
@@ -416,8 +417,9 @@ public class Connection {
 	/**
 	 * Sets the friendly name of this connection. This is returned by
 	 * {@link #toString()} and is useful for providing application specific
-	 * identifying information in the logging. May be null for the default name
-	 * of "Connection X", where X is the connection ID.
+	 * identifying information in the logging. Can be <code>null</code>.
+	 * 
+	 * @see #toString()
 	 */
 	public void setName(String name) {
 		this.name = name;
@@ -442,12 +444,17 @@ public class Connection {
 	/**
 	 * If the percent of the TCP write buffer that is filled is less than the
 	 * specified threshold, {@link Listener#idle(Connection)} will be called for
-	 * each network thread update. Default is 0.1.
+	 * each network thread update. Default is <code>0.1</code>.
 	 */
 	public void setIdleThreshold(float idleThreshold) {
 		tcp.idleThreshold = idleThreshold;
 	}
 
+	/**
+	 * The {@linkplain #name user-friendly} name of this connection or
+	 * <code>Connection X</code>, where <code>X</code> is the
+	 * {@linkplain #getID() connection ID}, per default.
+	 */
 	public String toString() {
 		if (name != null)
 			return name;

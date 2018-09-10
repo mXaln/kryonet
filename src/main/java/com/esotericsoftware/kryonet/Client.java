@@ -86,8 +86,8 @@ public class Client extends Connection implements EndPoint {
 	private ClientDiscoveryHandler discoveryHandler;
 
 	/**
-	 * Creates a Client with a write buffer size of 8192 and an object buffer
-	 * size of 2048.
+	 * Creates a Client with a write buffer size of <code>8192</code> and an
+	 * object buffer size of <code>2048</code>.
 	 */
 	public Client() {
 		this(8192, 2048);
@@ -547,7 +547,8 @@ public class Client extends Connection implements EndPoint {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * Should be called before connect().
+	 * Should be called before {@link #connect(int, InetAddress, int)} and its
+	 * variants.
 	 * 
 	 */
 	public void addListener(Listener listener) {
@@ -566,7 +567,8 @@ public class Client extends Connection implements EndPoint {
 	 * An empty object will be sent if the UDP connection is inactive more than
 	 * the specified milliseconds. Network hardware may keep a translation table
 	 * of inside to outside IP addresses and a UDP keep alive keeps this table
-	 * entry from expiring. Set to zero to disable. Defaults to 19000.
+	 * entry from expiring. Set to zero to disable. Defaults to
+	 * <code>19000</code>.
 	 */
 	public void setKeepAliveUDP(int keepAliveMillis) {
 		if (udp == null)

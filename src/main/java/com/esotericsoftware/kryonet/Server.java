@@ -39,6 +39,8 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
@@ -101,8 +103,8 @@ public class Server implements EndPoint {
 	};
 
 	/**
-	 * Creates a Server with a write buffer size of 16384 and an object buffer
-	 * size of 2048.
+	 * Creates a Server with a write buffer size of <code>16384</code> and an
+	 * object buffer size of <code>2048</code>.
 	 */
 	public Server() {
 		this(16384, 2048);
@@ -192,7 +194,7 @@ public class Server implements EndPoint {
 
 	/**
 	 * @param udpPort
-	 *            May be null.
+	 *            May be <code>null</code>.
 	 */
 	public void bind(InetSocketAddress tcpPort, InetSocketAddress udpPort)
 			throws IOException {
@@ -671,7 +673,7 @@ public class Server implements EndPoint {
 	/**
 	 * {@inheritDoc}
 	 * 
-	 * Should be called before connect().
+	 * Should be called before {@link #bind(int)}.
 	 * 
 	 */
 	public void addListener(Listener listener) {
@@ -773,7 +775,7 @@ public class Server implements EndPoint {
 	 * Returns the current connections. The array returned should not be
 	 * modified.
 	 */
-	public Connection[] getConnections() {
-		return connections;
+	public Collection<Connection> getConnections() {
+		return Collections.unmodifiableCollection(Arrays.asList(connections));
 	}
 }

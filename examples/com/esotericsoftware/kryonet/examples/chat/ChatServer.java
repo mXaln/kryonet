@@ -5,6 +5,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collections;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -118,12 +119,15 @@ public class ChatServer {
 
 	void updateNames() {
 		// Collect the names for each connection.
-		Connection[] connections = server.getConnections();
-		ArrayList names = new ArrayList(connections.length);
-		for (int i = connections.length - 1; i >= 0; i--) {
-			ChatConnection connection = (ChatConnection) connections[i];
+		ArrayList names = new ArrayList(server.getConnections().size());
+
+		for (Connection con : server.getConnections()) {
+			ChatConnection connection = (ChatConnection) con;
 			names.add(connection.name);
 		}
+
+		Collections.reverse(names);
+
 		// Send the names to everyone.
 		UpdateNames updateNames = new UpdateNames();
 		updateNames.names = (String[]) names.toArray(new String[names.size()]);
