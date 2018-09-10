@@ -11,6 +11,8 @@ import java.util.HashSet;
 
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
+import com.esotericsoftware.kryonet.Listener.ThreadedListener;
+import com.esotericsoftware.kryonet.Listener.TypeListener;
 import com.esotericsoftware.kryonet.Server;
 import com.esotericsoftware.kryonet.examples.position.Network.AddCharacter;
 import com.esotericsoftware.kryonet.examples.position.Network.Login;
@@ -25,10 +27,11 @@ public class PositionServer {
 	Server server;
 	HashSet<Character> loggedIn = new HashSet();
 
-	public PositionServer () throws IOException {
+	public PositionServer() throws IOException {
 		server = new Server() {
-			protected Connection newConnection () {
-				// By providing our own connection implementation, we can store per
+			protected Connection newConnection() {
+				// By providing our own connection implementation, we can store
+				// per
 				// connection state without a connection ID to state look up.
 				return new CharacterConnection();
 			}
@@ -39,112 +42,8 @@ public class PositionServer {
 		Network.register(server);
 
 		server.addListener(new Listener() {
-			public void received (Connection c, Object object) {
-				// We know all connections for this server are actually CharacterConnections.
-				CharacterConnection connection = (CharacterConnection)c;
-				Character character = connection.character;
-
-				if (object instanceof Login) {
-					// Ignore if already logged in.
-					if (character != null) return;
-
-					// Reject if the name is invalid.
-					String name = ((Login)object).name;
-					if (!isValid(name)) {
-						c.close();
-						return;
-					}
-
-					// Reject if already logged in.
-					for (Character other : loggedIn) {
-						if (other.name.equals(name)) {
-							c.close();
-							return;
-						}
-					}
-
-					character = loadCharacter(name);
-
-					// Reject if couldn't load character.
-					if (character == null) {
-						c.sendTCP(new RegistrationRequired());
-						return;
-					}
-
-					loggedIn(connection, character);
-					return;
-				}
-
-				if (object instanceof Register) {
-					// Ignore if already logged in.
-					if (character != null) return;
-
-					Register register = (Register)object;
-
-					// Reject if the login is invalid.
-					if (!isValid(register.name)) {
-						c.close();
-						return;
-					}
-					if (!isValid(register.otherStuff)) {
-						c.close();
-						return;
-					}
-
-					// Reject if character alread exists.
-					if (loadCharacter(register.name) != null) {
-						c.close();
-						return;
-					}
-
-					character = new Character();
-					character.name = register.name;
-					character.otherStuff = register.otherStuff;
-					character.x = 0;
-					character.y = 0;
-					if (!saveCharacter(character)) {
-						c.close();
-						return;
-					}
-
-					loggedIn(connection, character);
-					return;
-				}
-
-				if (object instanceof MoveCharacter) {
-					// Ignore if not logged in.
-					if (character == null) return;
-
-					MoveCharacter msg = (MoveCharacter)object;
-
-					// Ignore if invalid move.
-					if (Math.abs(msg.x) != 1 && Math.abs(msg.y) != 1) return;
-
-					character.x += msg.x;
-					character.y += msg.y;
-					if (!saveCharacter(character)) {
-						connection.close();
-						return;
-					}
-
-					UpdateCharacter update = new UpdateCharacter();
-					update.id = character.id;
-					update.x = character.x;
-					update.y = character.y;
-					server.sendToAllTCP(update);
-					return;
-				}
-			}
-
-			private boolean isValid (String value) {
-				if (value == null) return false;
-				value = value.trim();
-				if (value.length() == 0) return false;
-				return true;
-			}
-
-			public void disconnected (Connection c) {
-				CharacterConnection connection = (CharacterConnection)c;
+			public void disconnected(Connection c) {
+				CharacterConnection connection = (CharacterConnection) c;
 				if (connection.character != null) {
 					loggedIn.remove(connection.character);
 
@@ -154,11 +53,121 @@ public class PositionServer {
 				}
 			}
 		});
+
+		// Process the received messages conveniently via a type listener
+		TypeListener typeListener = new TypeListener();
+		typeListener.addTypeHandler(Login.class, (con, msg) -> {
+			// We know all connections for this server are actually
+			// CharacterConnections.
+			CharacterConnection connection = (CharacterConnection) con;
+			Character character = connection.character;
+
+			// Ignore if already logged in.
+			if (character != null)
+				return;
+
+			// Reject if the name is invalid.
+			String name = msg.name;
+			if (!isValid(name)) {
+				con.close();
+				return;
+			}
+
+			// Reject if already logged in.
+			for (Character other : loggedIn) {
+				if (other.name.equals(name)) {
+					con.close();
+					return;
+				}
+			}
+
+			character = loadCharacter(name);
+
+			// Reject if couldn't load character.
+			if (character == null) {
+				con.sendTCP(new RegistrationRequired());
+				return;
+			}
+
+			loggedIn(connection, character);
+		});
+		typeListener.addTypeHandler(Register.class, (con, msg) -> {
+			CharacterConnection connection = (CharacterConnection) con;
+			Character character = connection.character;
+
+			// Ignore if already logged in.
+			if (character != null)
+				return;
+
+			// Reject if the login is invalid.
+			if (!isValid(msg.name)) {
+				con.close();
+				return;
+			}
+			if (!isValid(msg.otherStuff)) {
+				con.close();
+				return;
+			}
+
+			// Reject if character alread exists.
+			if (loadCharacter(msg.name) != null) {
+				con.close();
+				return;
+			}
+
+			character = new Character();
+			character.name = msg.name;
+			character.otherStuff = msg.otherStuff;
+			character.x = 0;
+			character.y = 0;
+			if (!saveCharacter(character)) {
+				con.close();
+				return;
+			}
+
+			loggedIn(connection, character);
+		});
+		typeListener.addTypeHandler(MoveCharacter.class, (con, msg) -> {
+			CharacterConnection connection = (CharacterConnection) con;
+			Character character = connection.character;
+
+			// Ignore if not logged in.
+			if (character == null)
+				return;
+
+			// Ignore if invalid move.
+			if (Math.abs(msg.x) != 1 && Math.abs(msg.y) != 1)
+				return;
+
+			character.x += msg.x;
+			character.y += msg.y;
+			if (!saveCharacter(character)) {
+				connection.close();
+				return;
+			}
+
+			UpdateCharacter update = new UpdateCharacter();
+			update.id = character.id;
+			update.x = character.x;
+			update.y = character.y;
+			server.sendToAllTCP(update);
+		});
+
+		server.addListener(new ThreadedListener(typeListener));
 		server.bind(Network.port);
 		server.start();
 	}
 
-	void loggedIn (CharacterConnection c, Character character) {
+	boolean isValid(String value) {
+		if (value == null)
+			return false;
+		value = value.trim();
+		if (value.length() == 0)
+			return false;
+		return true;
+	}
+
+	void loggedIn(CharacterConnection c, Character character) {
 		c.character = character;
 
 		// Add existing characters to new logged in connection.
@@ -176,13 +185,14 @@ public class PositionServer {
 		server.sendToAllTCP(addCharacter);
 	}
 
-	boolean saveCharacter (Character character) {
+	boolean saveCharacter(Character character) {
 		File file = new File("characters", character.name.toLowerCase());
 		file.getParentFile().mkdirs();
 
 		if (character.id == 0) {
 			String[] children = file.getParentFile().list();
-			if (children == null) return false;
+			if (children == null)
+				return false;
 			character.id = children.length + 1;
 		}
 
@@ -205,9 +215,10 @@ public class PositionServer {
 		}
 	}
 
-	Character loadCharacter (String name) {
+	Character loadCharacter(String name) {
 		File file = new File("characters", name.toLowerCase());
-		if (!file.exists()) return null;
+		if (!file.exists())
+			return null;
 		DataInputStream input = null;
 		try {
 			input = new DataInputStream(new FileInputStream(file));
@@ -224,7 +235,8 @@ public class PositionServer {
 			return null;
 		} finally {
 			try {
-				if (input != null) input.close();
+				if (input != null)
+					input.close();
 			} catch (IOException ignored) {
 			}
 		}
@@ -235,7 +247,7 @@ public class PositionServer {
 		public Character character;
 	}
 
-	public static void main (String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {
 		Log.set(Log.LEVEL_DEBUG);
 		new PositionServer();
 	}

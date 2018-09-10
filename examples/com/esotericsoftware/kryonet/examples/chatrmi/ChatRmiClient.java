@@ -42,7 +42,7 @@ public class ChatRmiClient {
 	Client client;
 	IPlayer player;
 
-	public ChatRmiClient () {
+	public ChatRmiClient() {
 		client = new Client();
 		client.start();
 
@@ -51,13 +51,15 @@ public class ChatRmiClient {
 
 		// Get the Player on the other end of the connection.
 		// This allows the client to call methods on the server.
-		player = ObjectSpace.getRemoteObject(client, Network.PLAYER, IPlayer.class);
+		player = ObjectSpace.getRemoteObject(client, Network.PLAYER,
+				IPlayer.class);
 
 		client.addListener(new Listener() {
-			public void disconnected (Connection connection) {
+			public void disconnected(Connection connection) {
 				EventQueue.invokeLater(new Runnable() {
-					public void run () {
-						// Closing the frame calls the close listener which will stop the client's update thread.
+					public void run() {
+						// Closing the frame calls the close listener which will
+						// stop the client's update thread.
 						chatFrame.dispose();
 					}
 				});
@@ -65,15 +67,19 @@ public class ChatRmiClient {
 		});
 
 		// Request the host from the user.
-		String input = (String)JOptionPane.showInputDialog(null, "Host:", "Connect to chat server", JOptionPane.QUESTION_MESSAGE,
-			null, null, "localhost");
-		if (input == null || input.trim().length() == 0) System.exit(1);
+		String input = (String) JOptionPane.showInputDialog(null, "Host:",
+				"Connect to chat server", JOptionPane.QUESTION_MESSAGE, null,
+				null, "localhost");
+		if (input == null || input.trim().length() == 0)
+			System.exit(1);
 		final String host = input.trim();
 
 		// Request the user's name.
-		input = (String)JOptionPane.showInputDialog(null, "Name:", "Connect to chat server", JOptionPane.QUESTION_MESSAGE, null,
-			null, "Test");
-		if (input == null || input.trim().length() == 0) System.exit(1);
+		input = (String) JOptionPane.showInputDialog(null, "Name:",
+				"Connect to chat server", JOptionPane.QUESTION_MESSAGE, null,
+				null, "Test");
+		if (input == null || input.trim().length() == 0)
+			System.exit(1);
 		final String name = input.trim();
 
 		// The chat frame contains all the Swing stuff.
@@ -82,25 +88,28 @@ public class ChatRmiClient {
 		new ObjectSpace(client).register(Network.CHAT_FRAME, chatFrame);
 		// This listener is called when the send button is clicked.
 		chatFrame.setSendListener(new Runnable() {
-			public void run () {
+			public void run() {
 				player.sendMessage(chatFrame.getSendText());
 			}
 		});
 		// This listener is called when the chat window is closed.
 		chatFrame.setCloseListener(new Runnable() {
-			public void run () {
+			public void run() {
 				client.stop();
 			}
 		});
 		chatFrame.setVisible(true);
 
-		// We'll do the connect on a new thread so the ChatFrame can show a progress bar.
-		// Connecting to localhost is usually so fast you won't see the progress bar.
+		// We'll do the connect on a new thread so the ChatFrame can show a
+		// progress bar.
+		// Connecting to localhost is usually so fast you won't see the progress
+		// bar.
 		new Thread("Connect") {
-			public void run () {
+			public void run() {
 				try {
 					client.connect(5000, host, Network.port);
-					// Server communication after connection can go here, or in Listener#connected().
+					// Server communication after connection can go here, or in
+					// Listener#connected().
 					player.registerName(name);
 				} catch (IOException ex) {
 					ex.printStackTrace();
@@ -110,7 +119,8 @@ public class ChatRmiClient {
 		}.start();
 	}
 
-	// This is the JFrame for the client. It implments IChatFrame so the server can call methods on it.
+	// This is the JFrame for the client. It implments IChatFrame so the server
+	// can call methods on it.
 	static private class ChatFrame extends JFrame implements IChatFrame {
 		CardLayout cardLayout;
 		JProgressBar progressBar;
@@ -119,7 +129,7 @@ public class ChatRmiClient {
 		JButton sendButton;
 		JList nameList;
 
-		public ChatFrame (String host) {
+		public ChatFrame(String host) {
 			super("Chat RMI Client");
 			setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 			setSize(640, 200);
@@ -133,7 +143,8 @@ public class ChatRmiClient {
 				contentPane.add(panel, "progress");
 				panel.add(new JLabel("Connecting to " + host + "..."));
 				{
-					panel.add(progressBar = new JProgressBar(), BorderLayout.SOUTH);
+					panel.add(progressBar = new JProgressBar(),
+							BorderLayout.SOUTH);
 					progressBar.setIndeterminate(true);
 				}
 			}
@@ -144,7 +155,8 @@ public class ChatRmiClient {
 					JPanel topPanel = new JPanel(new GridLayout(1, 2));
 					panel.add(topPanel);
 					{
-						topPanel.add(new JScrollPane(messageList = new JList()));
+						topPanel.add(
+								new JScrollPane(messageList = new JList()));
 						messageList.setModel(new DefaultListModel());
 					}
 					{
@@ -152,7 +164,8 @@ public class ChatRmiClient {
 						nameList.setModel(new DefaultListModel());
 					}
 					DefaultListSelectionModel disableSelections = new DefaultListSelectionModel() {
-						public void setSelectionInterval (int index0, int index1) {
+						public void setSelectionInterval(int index0,
+								int index1) {
 						}
 					};
 					messageList.setSelectionModel(disableSelections);
@@ -161,24 +174,30 @@ public class ChatRmiClient {
 				{
 					JPanel bottomPanel = new JPanel(new GridBagLayout());
 					panel.add(bottomPanel, BorderLayout.SOUTH);
-					bottomPanel.add(sendText = new JTextField(), new GridBagConstraints(0, 0, 1, 1, 1, 0, GridBagConstraints.CENTER,
-						GridBagConstraints.BOTH, new Insets(0, 0, 0, 0), 0, 0));
-					bottomPanel.add(sendButton = new JButton("Send"), new GridBagConstraints(1, 0, 1, 1, 0, 0,
-						GridBagConstraints.CENTER, 0, new Insets(0, 0, 0, 0), 0, 0));
+					bottomPanel.add(sendText = new JTextField(),
+							new GridBagConstraints(0, 0, 1, 1, 1, 0,
+									GridBagConstraints.CENTER,
+									GridBagConstraints.BOTH,
+									new Insets(0, 0, 0, 0), 0, 0));
+					bottomPanel.add(sendButton = new JButton("Send"),
+							new GridBagConstraints(1, 0, 1, 1, 0, 0,
+									GridBagConstraints.CENTER, 0,
+									new Insets(0, 0, 0, 0), 0, 0));
 				}
 			}
 
 			sendText.addActionListener(new ActionListener() {
-				public void actionPerformed (ActionEvent e) {
+				public void actionPerformed(ActionEvent e) {
 					sendButton.doClick();
 				}
 			});
 		}
 
-		public void setSendListener (final Runnable listener) {
+		public void setSendListener(final Runnable listener) {
 			sendButton.addActionListener(new ActionListener() {
-				public void actionPerformed (ActionEvent evt) {
-					if (getSendText().length() == 0) return;
+				public void actionPerformed(ActionEvent evt) {
+					if (getSendText().length() == 0)
+						return;
 					listener.run();
 					sendText.setText("");
 					sendText.requestFocus();
@@ -186,28 +205,29 @@ public class ChatRmiClient {
 			});
 		}
 
-		public void setCloseListener (final Runnable listener) {
+		public void setCloseListener(final Runnable listener) {
 			addWindowListener(new WindowAdapter() {
-				public void windowClosed (WindowEvent evt) {
+				public void windowClosed(WindowEvent evt) {
 					listener.run();
 				}
 
-				public void windowActivated (WindowEvent evt) {
+				public void windowActivated(WindowEvent evt) {
 					sendText.requestFocus();
 				}
 			});
 		}
 
-		public String getSendText () {
+		public String getSendText() {
 			return sendText.getText().trim();
 		}
 
 		// The server calls this method as needed.
-		public void setNames (final String[] names) {
+		public void setNames(final String[] names) {
 			EventQueue.invokeLater(new Runnable() {
-				public void run () {
+				public void run() {
 					cardLayout.show(getContentPane(), "chat");
-					DefaultListModel model = (DefaultListModel)nameList.getModel();
+					DefaultListModel model = (DefaultListModel) nameList
+							.getModel();
 					model.removeAllElements();
 					for (String name : names)
 						model.addElement(name);
@@ -216,10 +236,11 @@ public class ChatRmiClient {
 		}
 
 		// The server calls this method as needed.
-		public void addMessage (final String message) {
+		public void addMessage(final String message) {
 			EventQueue.invokeLater(new Runnable() {
-				public void run () {
-					DefaultListModel model = (DefaultListModel)messageList.getModel();
+				public void run() {
+					DefaultListModel model = (DefaultListModel) messageList
+							.getModel();
 					model.addElement(message);
 					messageList.ensureIndexIsVisible(model.size() - 1);
 				}
@@ -227,7 +248,7 @@ public class ChatRmiClient {
 		}
 	}
 
-	public static void main (String[] args) {
+	public static void main(String[] args) {
 		Log.set(Log.LEVEL_DEBUG);
 		new ChatRmiClient();
 	}

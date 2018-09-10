@@ -10,6 +10,7 @@ import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
+import com.esotericsoftware.kryonet.Listener.TypeListener;
 import com.esotericsoftware.kryonet.examples.position.Network.AddCharacter;
 import com.esotericsoftware.kryonet.examples.position.Network.Login;
 import com.esotericsoftware.kryonet.examples.position.Network.MoveCharacter;
@@ -24,7 +25,7 @@ public class PositionClient {
 	Client client;
 	String name;
 
-	public PositionClient () {
+	public PositionClient() {
 		client = new Client();
 		client.start();
 
@@ -34,46 +35,37 @@ public class PositionClient {
 
 		// ThreadedListener runs the listener methods on a different thread.
 		client.addListener(new ThreadedListener(new Listener() {
-			public void connected (Connection connection) {
-			}
-
-			public void received (Connection connection, Object object) {
-				if (object instanceof RegistrationRequired) {
-					Register register = new Register();
-					register.name = name;
-					register.otherStuff = ui.inputOtherStuff();
-					client.sendTCP(register);
-				}
-
-				if (object instanceof AddCharacter) {
-					AddCharacter msg = (AddCharacter)object;
-					ui.addCharacter(msg.character);
-					return;
-				}
-
-				if (object instanceof UpdateCharacter) {
-					ui.updateCharacter((UpdateCharacter)object);
-					return;
-				}
-
-				if (object instanceof RemoveCharacter) {
-					RemoveCharacter msg = (RemoveCharacter)object;
-					ui.removeCharacter(msg.id);
-					return;
-				}
-			}
-
-			public void disconnected (Connection connection) {
+			public void disconnected(Connection connection) {
 				System.exit(0);
 			}
 		}));
+
+		// Process the received messages conveniently via a type listener
+		TypeListener typeListener = new TypeListener();
+		typeListener.addTypeHandler(RegistrationRequired.class, (con, msg) -> {
+			Register register = new Register();
+			register.name = name;
+			register.otherStuff = ui.inputOtherStuff();
+			client.sendTCP(register);
+		});
+		typeListener.addTypeHandler(AddCharacter.class, (con, msg) -> {
+			ui.addCharacter(msg.character);
+		});
+		typeListener.addTypeHandler(UpdateCharacter.class, (con, msg) -> {
+			ui.updateCharacter(msg);
+		});
+		typeListener.addTypeHandler(RemoveCharacter.class, (con, msg) -> {
+			ui.removeCharacter(msg.id);
+		});
+		client.addListener(new ThreadedListener(typeListener));
 
 		ui = new UI();
 
 		String host = ui.inputHost();
 		try {
 			client.connect(5000, host, Network.port);
-			// Server communication after connection can go here, or in Listener#connected().
+			// Server communication after connection can go here, or in
+			// Listener#connected().
 		} catch (IOException ex) {
 			ex.printStackTrace();
 		}
@@ -109,54 +101,65 @@ public class PositionClient {
 			default:
 				msg = null;
 			}
-			if (msg != null) client.sendTCP(msg);
+			if (msg != null)
+				client.sendTCP(msg);
 		}
 	}
 
 	static class UI {
 		HashMap<Integer, Character> characters = new HashMap();
 
-		public String inputHost () {
-			String input = (String)JOptionPane.showInputDialog(null, "Host:", "Connect to server", JOptionPane.QUESTION_MESSAGE,
-				null, null, "localhost");
-			if (input == null || input.trim().length() == 0) System.exit(1);
+		public String inputHost() {
+			String input = (String) JOptionPane.showInputDialog(null, "Host:",
+					"Connect to server", JOptionPane.QUESTION_MESSAGE, null,
+					null, "localhost");
+			if (input == null || input.trim().length() == 0)
+				System.exit(1);
 			return input.trim();
 		}
 
-		public String inputName () {
-			String input = (String)JOptionPane.showInputDialog(null, "Name:", "Connect to server", JOptionPane.QUESTION_MESSAGE,
-				null, null, "Test");
-			if (input == null || input.trim().length() == 0) System.exit(1);
+		public String inputName() {
+			String input = (String) JOptionPane.showInputDialog(null, "Name:",
+					"Connect to server", JOptionPane.QUESTION_MESSAGE, null,
+					null, "Test");
+			if (input == null || input.trim().length() == 0)
+				System.exit(1);
 			return input.trim();
 		}
 
-		public String inputOtherStuff () {
-			String input = (String)JOptionPane.showInputDialog(null, "Other Stuff:", "Create account", JOptionPane.QUESTION_MESSAGE,
-				null, null, "other stuff");
-			if (input == null || input.trim().length() == 0) System.exit(1);
+		public String inputOtherStuff() {
+			String input = (String) JOptionPane.showInputDialog(null,
+					"Other Stuff:", "Create account",
+					JOptionPane.QUESTION_MESSAGE, null, null, "other stuff");
+			if (input == null || input.trim().length() == 0)
+				System.exit(1);
 			return input.trim();
 		}
 
-		public void addCharacter (Character character) {
+		public void addCharacter(Character character) {
 			characters.put(character.id, character);
-			System.out.println(character.name + " added at " + character.x + ", " + character.y);
+			System.out.println(character.name + " added at " + character.x
+					+ ", " + character.y);
 		}
 
-		public void updateCharacter (UpdateCharacter msg) {
+		public void updateCharacter(UpdateCharacter msg) {
 			Character character = characters.get(msg.id);
-			if (character == null) return;
+			if (character == null)
+				return;
 			character.x = msg.x;
 			character.y = msg.y;
-			System.out.println(character.name + " moved to " + character.x + ", " + character.y);
+			System.out.println(character.name + " moved to " + character.x
+					+ ", " + character.y);
 		}
 
-		public void removeCharacter (int id) {
+		public void removeCharacter(int id) {
 			Character character = characters.remove(id);
-			if (character != null) System.out.println(character.name + " removed");
+			if (character != null)
+				System.out.println(character.name + " removed");
 		}
 	}
 
-	public static void main (String[] args) {
+	public static void main(String[] args) {
 		Log.set(Log.LEVEL_DEBUG);
 		new PositionClient();
 	}
