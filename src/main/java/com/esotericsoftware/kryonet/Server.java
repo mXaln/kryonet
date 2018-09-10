@@ -76,12 +76,14 @@ public class Server implements EndPoint {
 	private ServerDiscoveryHandler discoveryHandler;
 
 	private Listener dispatchListener = new Listener() {
+		@Override
 		public void connected(Connection connection) {
 			Listener[] listeners = Server.this.listeners;
 			for (int i = 0, n = listeners.length; i < n; i++)
 				listeners[i].connected(connection);
 		}
 
+		@Override
 		public void disconnected(Connection connection) {
 			removeConnection(connection);
 			Listener[] listeners = Server.this.listeners;
@@ -89,12 +91,14 @@ public class Server implements EndPoint {
 				listeners[i].disconnected(connection);
 		}
 
+		@Override
 		public void received(Connection connection, Object object) {
 			Listener[] listeners = Server.this.listeners;
 			for (int i = 0, n = listeners.length; i < n; i++)
 				listeners[i].received(connection, object);
 		}
 
+		@Override
 		public void idle(Connection connection) {
 			Listener[] listeners = Server.this.listeners;
 			for (int i = 0, n = listeners.length; i < n; i++)
@@ -165,6 +169,7 @@ public class Server implements EndPoint {
 		return serializationFactory;
 	}
 
+	@Override
 	public Kryo getKryo() {
 		return serializationFactory instanceof KryoSerializationFactory
 				? (((KryoSerializationFactory) serializationFactory).getKryo())
@@ -237,6 +242,7 @@ public class Server implements EndPoint {
 	 *            be ready to process. May be zero to return immediately if
 	 *            there are no connections to process.
 	 */
+	@Override
 	public void update(int timeout) throws IOException {
 		updateThread = Thread.currentThread();
 		synchronized (updateLock) { // Blocks to avoid a select while the
@@ -520,6 +526,7 @@ public class Server implements EndPoint {
 		}
 	}
 
+	@Override
 	public void run() {
 		if (TRACE)
 			trace("kryonet", "Server thread started.");
@@ -537,10 +544,12 @@ public class Server implements EndPoint {
 			trace("kryonet", "Server thread stopped.");
 	}
 
+	@Override
 	public void start() {
 		new Thread(this, "Server").start();
 	}
 
+	@Override
 	public void stop() {
 		if (shutdown)
 			return;
@@ -676,6 +685,7 @@ public class Server implements EndPoint {
 	 * Should be called before {@link #bind(int)}.
 	 * 
 	 */
+	@Override
 	public void addListener(Listener listener) {
 		if (listener == null)
 			throw new IllegalArgumentException("listener cannot be null.");
@@ -695,6 +705,7 @@ public class Server implements EndPoint {
 					"Server listener added: " + listener.getClass().getName());
 	}
 
+	@Override
 	public void removeListener(Listener listener) {
 		if (listener == null)
 			throw new IllegalArgumentException("listener cannot be null.");
@@ -720,6 +731,7 @@ public class Server implements EndPoint {
 	/**
 	 * Closes all open connections and the server port(s).
 	 */
+	@Override
 	public void close() {
 		Connection[] connections = this.connections;
 		if (INFO && connections.length > 0)
@@ -767,6 +779,7 @@ public class Server implements EndPoint {
 		selector.close();
 	}
 
+	@Override
 	public Thread getUpdateThread() {
 		return updateThread;
 	}

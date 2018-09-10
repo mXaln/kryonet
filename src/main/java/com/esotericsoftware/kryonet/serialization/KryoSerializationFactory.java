@@ -61,25 +61,30 @@ public class KryoSerializationFactory implements SerializationFactory {
 			return kryo;
 		}
 
+		@Override
 		public synchronized void write(ByteBuffer buffer, Object object) {
 			output.setBuffer(buffer);
 			kryo.writeClassAndObject(output, object);
 			output.flush();
 		}
 
+		@Override
 		public synchronized Object read(ByteBuffer buffer) {
 			input.setBuffer(buffer);
 			return kryo.readClassAndObject(input);
 		}
 
+		@Override
 		public void writeLength(ByteBuffer buffer, int length) {
 			buffer.putInt(length);
 		}
 
+		@Override
 		public int readLength(ByteBuffer buffer) {
 			return buffer.getInt();
 		}
 
+		@Override
 		public int getLengthLength() {
 			return 4;
 		}

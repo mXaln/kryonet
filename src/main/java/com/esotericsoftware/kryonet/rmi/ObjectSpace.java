@@ -94,6 +94,7 @@ public class ObjectSpace {
 	Executor executor;
 
 	private final Listener invokeListener = new Listener() {
+		@Override
 		public void received(final Connection connection, Object object) {
 			if (!(object instanceof InvokeMethod))
 				return;
@@ -119,6 +120,7 @@ public class ObjectSpace {
 				invoke(connection, target, invokeMethod);
 			else {
 				executor.execute(new Runnable() {
+					@Override
 					public void run() {
 						invoke(connection, target, invokeMethod);
 					}
@@ -126,6 +128,7 @@ public class ObjectSpace {
 			}
 		}
 
+		@Override
 		public void disconnected(Connection connection) {
 			removeConnection(connection);
 		}
@@ -437,6 +440,7 @@ public class ObjectSpace {
 			this.objectID = objectID;
 
 			responseListener = new Listener() {
+				@Override
 				public void received(Connection connection, Object object) {
 					if (!(object instanceof InvokeMethodResult))
 						return;
@@ -458,6 +462,7 @@ public class ObjectSpace {
 					}
 				}
 
+				@Override
 				public void disconnected(Connection connection) {
 					close();
 				}
@@ -473,6 +478,7 @@ public class ObjectSpace {
 			connection.addListener(responseListener);
 		}
 
+		@Override
 		public Object invoke(Object proxy, Method method, Object[] args)
 				throws Exception {
 			Class declaringClass = method.getDeclaringClass();
@@ -691,6 +697,7 @@ public class ObjectSpace {
 		// possible duplicate IDs. A response data of 0 means to not respond.
 		public byte responseData;
 
+		@Override
 		public void write(Kryo kryo, Output output) {
 			output.writeInt(objectID, true);
 			output.writeInt(cachedMethod.methodClassID, true);
@@ -709,6 +716,7 @@ public class ObjectSpace {
 			output.writeByte(responseData);
 		}
 
+		@Override
 		public void read(Kryo kryo, Input input) {
 			objectID = input.readInt(true);
 
@@ -778,7 +786,9 @@ public class ObjectSpace {
 				continue;
 			methods.add(method);
 		}
+
 		Collections.sort(methods, new Comparator<Method>() {
+			@Override
 			public int compare(Method o1, Method o2) {
 				// Methods are sorted so they can be represented as an index.
 				int diff = o1.getName().compareTo(o2.getName());
@@ -790,6 +800,7 @@ public class ObjectSpace {
 					return 1;
 				if (argTypes1.length < argTypes2.length)
 					return -1;
+
 				for (int i = 0; i < argTypes1.length; i++) {
 					diff = argTypes1[i].getName()
 							.compareTo(argTypes2[i].getName());
@@ -899,29 +910,34 @@ public class ObjectSpace {
 
 		FieldSerializer<InvokeMethodResult> resultSerializer = new FieldSerializer<InvokeMethodResult>(
 				kryo, InvokeMethodResult.class) {
+			@Override
 			public void write(Kryo kryo, Output output,
 					InvokeMethodResult result) {
 				super.write(kryo, output, result);
 				output.writeInt(result.objectID, true);
 			}
 
+			@Override
 			public InvokeMethodResult read(Kryo kryo, Input input,
-					Class<InvokeMethodResult> type) {
+					Class<? extends InvokeMethodResult> type) {
 				InvokeMethodResult result = super.read(kryo, input, type);
 				result.objectID = input.readInt(true);
 				return result;
 			}
+
 		};
 		resultSerializer.removeField("objectID");
 		kryo.register(InvokeMethodResult.class, resultSerializer);
 
 		kryo.register(InvocationHandler.class, new Serializer() {
+			@Override
 			public void write(Kryo kryo, Output output, Object object) {
 				RemoteInvocationHandler handler = (RemoteInvocationHandler) Proxy
 						.getInvocationHandler(object);
 				output.writeInt(handler.objectID, true);
 			}
 
+			@Override
 			public Object read(Kryo kryo, Input input, Class type) {
 				int objectID = input.readInt(true);
 				Connection connection = (Connection) kryo.getContext()
@@ -959,6 +975,7 @@ public class ObjectSpace {
 		MethodAccess methodAccess;
 		int methodAccessIndex = -1;
 
+		@Override
 		public Object invoke(Object target, Object[] args)
 				throws IllegalAccessException, InvocationTargetException {
 			try {
@@ -977,6 +994,7 @@ public class ObjectSpace {
 	 * @author Nathan Sweet <misc@n4te.com>
 	 */
 	static public class RemoteObjectSerializer extends Serializer {
+		@Override
 		public void write(Kryo kryo, Output output, Object object) {
 			Connection connection = (Connection) kryo.getContext()
 					.get("connection");
@@ -987,6 +1005,7 @@ public class ObjectSpace {
 			output.writeInt(id, true);
 		}
 
+		@Override
 		public Object read(Kryo kryo, Input input, Class type) {
 			int objectID = input.readInt(true);
 			Connection connection = (Connection) kryo.getContext()

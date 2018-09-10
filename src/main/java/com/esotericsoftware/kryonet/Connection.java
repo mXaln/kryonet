@@ -455,6 +455,7 @@ public class Connection {
 	 * <code>Connection X</code>, where <code>X</code> is the
 	 * {@linkplain #getID() connection ID}, per default.
 	 */
+	@Override
 	public String toString() {
 		if (name != null)
 			return name;

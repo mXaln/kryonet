@@ -45,6 +45,7 @@ public interface EndPoint extends Runnable {
 	/**
 	 * Continually updates this end point until {@link #stop()} is called.
 	 */
+	@Override
 	public void run();
 
 	/**
@@ -78,8 +79,8 @@ public interface EndPoint extends Runnable {
 
 	/**
 	 * Gets the {@linkplain Kryo} instance that will be used to serialize and
-	 * deserialize objects. This is only valid if {@link KryoSerialization} is
-	 * being used, which is the default.
+	 * deserialize objects. Returns <code>null</code> if the used serialization
+	 * is not an instance of {@link KryoSerialization}.
 	 * 
 	 * @return May be <code>null</code>.
 	 */

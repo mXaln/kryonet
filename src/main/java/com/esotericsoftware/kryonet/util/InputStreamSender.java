@@ -33,6 +33,7 @@ abstract public class InputStreamSender extends TcpIdleSender {
 		chunk = new byte[chunkSize];
 	}
 
+	@Override
 	protected final Object next() {
 		try {
 			int total = 0;

@@ -145,32 +145,40 @@ public interface Listener {
 			this.listener = listener;
 		}
 
+		@Override
 		public void connected(final Connection connection) {
 			queue(new Runnable() {
+				@Override
 				public void run() {
 					listener.connected(connection);
 				}
 			});
 		}
 
+		@Override
 		public void disconnected(final Connection connection) {
 			queue(new Runnable() {
+				@Override
 				public void run() {
 					listener.disconnected(connection);
 				}
 			});
 		}
 
+		@Override
 		public void received(final Connection connection, final Object object) {
 			queue(new Runnable() {
+				@Override
 				public void run() {
 					listener.received(connection, object);
 				}
 			});
 		}
 
+		@Override
 		public void idle(final Connection connection) {
 			queue(new Runnable() {
+				@Override
 				public void run() {
 					listener.idle(connection);
 				}
@@ -205,6 +213,7 @@ public interface Listener {
 			this.threadPool = threadPool;
 		}
 
+		@Override
 		public void queue(Runnable runnable) {
 			threadPool.execute(runnable);
 		}
@@ -229,6 +238,7 @@ public interface Listener {
 			threadPool = Executors.newScheduledThreadPool(1);
 		}
 
+		@Override
 		public void queue(Runnable runnable) {
 			synchronized (runnables) {
 				runnables.addFirst(runnable);
@@ -236,6 +246,7 @@ public interface Listener {
 			int lag = lagMillisMin
 					+ (int) (Math.random() * (lagMillisMax - lagMillisMin));
 			threadPool.schedule(new Runnable() {
+				@Override
 				public void run() {
 					Runnable runnable;
 					synchronized (runnables) {

@@ -146,6 +146,7 @@ public class Client extends Connection implements EndPoint {
 		discoveryHandler = newDiscoveryHandler;
 	}
 
+	@Override
 	public Kryo getKryo() {
 		return serialization instanceof KryoSerialization
 				? (((KryoSerialization) serialization).getKryo())
@@ -311,6 +312,7 @@ public class Client extends Connection implements EndPoint {
 	 *            to process. May be zero to return immediately if there is no
 	 *            data to process.
 	 */
+	@Override
 	public void update(int timeout) throws IOException {
 		updateThread = Thread.currentThread();
 		synchronized (updateLock) { // Blocks to avoid a select while the
@@ -460,6 +462,7 @@ public class Client extends Connection implements EndPoint {
 			sendUDP(FrameworkMessage.keepAlive);
 	}
 
+	@Override
 	public void run() {
 		if (TRACE)
 			trace("kryonet", "Client thread started.");
@@ -499,6 +502,7 @@ public class Client extends Connection implements EndPoint {
 			trace("kryonet", "Client thread stopped.");
 	}
 
+	@Override
 	public void start() {
 		// Try to let any previous update thread stop.
 		if (updateThread != null) {
@@ -513,6 +517,7 @@ public class Client extends Connection implements EndPoint {
 		updateThread.start();
 	}
 
+	@Override
 	public void stop() {
 		if (shutdown)
 			return;
@@ -523,6 +528,7 @@ public class Client extends Connection implements EndPoint {
 		selector.wakeup();
 	}
 
+	@Override
 	public void close() {
 		super.close();
 		synchronized (updateLock) { // Blocks to avoid a select while the
@@ -551,12 +557,14 @@ public class Client extends Connection implements EndPoint {
 	 * variants.
 	 * 
 	 */
+	@Override
 	public void addListener(Listener listener) {
 		super.addListener(listener);
 		if (TRACE)
 			trace("kryonet", "Client listener added.");
 	}
 
+	@Override
 	public void removeListener(Listener listener) {
 		super.removeListener(listener);
 		if (TRACE)
@@ -576,6 +584,7 @@ public class Client extends Connection implements EndPoint {
 		udp.keepAliveMillis = keepAliveMillis;
 	}
 
+	@Override
 	public Thread getUpdateThread() {
 		return updateThread;
 	}

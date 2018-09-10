@@ -25,6 +25,7 @@ import com.esotericsoftware.kryonet.Listener;
 abstract public class TcpIdleSender implements Listener {
 	boolean started;
 
+	@Override
 	public void idle(Connection connection) {
 		if (!started) {
 			started = true;
