@@ -475,4 +475,23 @@ public class Connection {
 	public void setArbitraryData(Object arbitraryData) {
 		this.arbitraryData = arbitraryData;
 	}
+
+	@Override
+	public int hashCode() {
+		return 31 + id;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Connection other = (Connection) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
 }
