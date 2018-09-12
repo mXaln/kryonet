@@ -151,7 +151,8 @@ public class Server implements EndPoint {
 
 		this.serializationFactory = serializationFactory;
 
-		this.discoveryHandler = ServerDiscoveryHandler.DEFAULT;
+		this.discoveryHandler = new ServerDiscoveryHandler() {
+		};
 
 		try {
 			selector = Selector.open();

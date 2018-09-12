@@ -27,20 +27,8 @@ import java.nio.channels.DatagramChannel;
 import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
 
 public interface ServerDiscoveryHandler {
-	/**
-	 * This implementation of {@link ServerDiscoveryHandler} is responsible for
-	 * providing the {@link Server} with it's default behavior.
-	 */
-	public static final ServerDiscoveryHandler DEFAULT = new ServerDiscoveryHandler() {
-		private ByteBuffer emptyBuffer = ByteBuffer.allocate(0);
 
-		@Override
-		public boolean onDiscoverHost(DatagramChannel datagramChannel,
-				InetSocketAddress fromAddress) throws IOException {
-			datagramChannel.send(emptyBuffer, fromAddress);
-			return true;
-		}
-	};
+	ByteBuffer emptyBuffer = ByteBuffer.allocate(0);
 
 	/**
 	 * Called when the {@link Server} receives a {@link DiscoverHost} packet.
@@ -53,6 +41,9 @@ public interface ServerDiscoveryHandler {
 	 *             from the use of
 	 *             {@link DatagramChannel#send(ByteBuffer, java.net.SocketAddress)}
 	 */
-	public boolean onDiscoverHost(DatagramChannel datagramChannel,
-			InetSocketAddress fromAddress) throws IOException;
+	public default boolean onDiscoverHost(DatagramChannel datagramChannel,
+			InetSocketAddress fromAddress) throws IOException {
+		datagramChannel.send(emptyBuffer, fromAddress);
+		return true;
+	}
 }

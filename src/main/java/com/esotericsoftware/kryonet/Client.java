@@ -130,7 +130,8 @@ public class Client extends Connection implements EndPoint {
 
 		this.serialization = serializationFactory.newInstance(this);
 
-		this.discoveryHandler = ClientDiscoveryHandler.DEFAULT;
+		this.discoveryHandler = new ClientDiscoveryHandler() {
+		};
 
 		initialize(serialization, writeBufferSize, objectBufferSize);
 
