@@ -138,7 +138,7 @@ public class ObjectIntMap<K> {
 	 */
 	public void put(K key, int value) {
 		if (key == null)
-			throw new IllegalArgumentException("The key cannot be null.");
+			throw new NullPointerException("The key cannot be null.");
 		K[] keyTable = this.keyTable;
 
 		// Check for existing keys.

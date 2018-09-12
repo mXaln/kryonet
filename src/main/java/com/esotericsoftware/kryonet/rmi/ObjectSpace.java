@@ -194,7 +194,9 @@ public class ObjectSpace {
 			throw new IllegalArgumentException(
 					"objectID cannot be Integer.MAX_VALUE.");
 		if (object == null)
-			throw new IllegalArgumentException("object cannot be null.");
+			throw new NullPointerException(
+					"object to register cannot be null.");
+
 		idToObject.put(objectID, object);
 		objectToID.put(object, objectID);
 		if (TRACE)
@@ -256,7 +258,7 @@ public class ObjectSpace {
 	 */
 	public void addConnection(Connection connection) {
 		if (connection == null)
-			throw new IllegalArgumentException("connection cannot be null.");
+			throw new NullPointerException("connection cannot be null.");
 
 		synchronized (connectionsLock) {
 			Connection[] newConnections = new Connection[connections.length
@@ -279,7 +281,7 @@ public class ObjectSpace {
 	 */
 	public void removeConnection(Connection connection) {
 		if (connection == null)
-			throw new IllegalArgumentException("connection cannot be null.");
+			throw new NullPointerException("connection cannot be null.");
 
 		connection.removeListener(invokeListener);
 
@@ -401,9 +403,9 @@ public class ObjectSpace {
 	static public RemoteObject getRemoteObject(Connection connection,
 			int objectID, Class... ifaces) {
 		if (connection == null)
-			throw new IllegalArgumentException("connection cannot be null.");
+			throw new NullPointerException("connection cannot be null.");
 		if (ifaces == null)
-			throw new IllegalArgumentException("ifaces cannot be null.");
+			throw new NullPointerException("ifaces cannot be null.");
 		Class[] temp = new Class[ifaces.length + 1];
 		temp[0] = RemoteObject.class;
 		System.arraycopy(ifaces, 0, temp, 1, ifaces.length);

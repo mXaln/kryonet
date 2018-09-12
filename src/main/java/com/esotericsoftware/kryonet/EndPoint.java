@@ -36,10 +36,16 @@ public interface EndPoint extends Runnable {
 	 * added before, it is ignored.
 	 * 
 	 * @param listener
-	 *            The listener to add.
+	 *            The listener to add. Cannot be <code>null</code>.
 	 */
 	public void addListener(Listener listener);
 
+	/**
+	 * Removes a previously added listener.
+	 * 
+	 * @param listener
+	 *            The listener to remove. Cannot be <code>null</code>.
+	 */
 	public void removeListener(Listener listener);
 
 	/**

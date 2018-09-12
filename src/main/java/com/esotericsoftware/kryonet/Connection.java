@@ -107,7 +107,7 @@ public class Connection {
 	 */
 	public int sendTCP(Object object) {
 		if (object == null)
-			throw new IllegalArgumentException("object cannot be null.");
+			throw new NullPointerException("object to send cannot be null.");
 		try {
 			int length = tcp.send(object);
 			if (length == 0) {
@@ -150,13 +150,13 @@ public class Connection {
 	 */
 	public int sendUDP(Object object) {
 		if (object == null)
-			throw new IllegalArgumentException("object cannot be null.");
+			throw new NullPointerException("object to send cannot be null.");
 		SocketAddress address = udpRemoteAddress;
 		if (address == null && udp != null)
 			address = udp.connectedAddress;
 		if (address == null && isConnected)
 			throw new IllegalStateException(
-					"Connection is not connected via UDP.");
+					"This connection is not connected via UDP.");
 
 		try {
 			if (address == null)
@@ -272,7 +272,7 @@ public class Connection {
 	 */
 	public void addListener(Listener listener) {
 		if (listener == null)
-			throw new IllegalArgumentException("listener cannot be null.");
+			throw new NullPointerException("listener cannot be null.");
 		synchronized (listenerLock) {
 			Listener[] listeners = this.listeners;
 			int n = listeners.length;
@@ -291,7 +291,7 @@ public class Connection {
 
 	public void removeListener(Listener listener) {
 		if (listener == null)
-			throw new IllegalArgumentException("listener cannot be null.");
+			throw new NullPointerException("listener cannot be null.");
 		synchronized (listenerLock) {
 			Listener[] listeners = this.listeners;
 			int n = listeners.length;

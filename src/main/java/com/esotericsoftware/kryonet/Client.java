@@ -203,7 +203,7 @@ public class Client extends Connection implements EndPoint {
 	public void connect(int timeout, InetAddress host, int tcpPort, int udpPort)
 			throws IOException {
 		if (host == null)
-			throw new IllegalArgumentException("host cannot be null.");
+			throw new NullPointerException("host cannot be null.");
 		if (Thread.currentThread() == getUpdateThread())
 			throw new IllegalStateException(
 					"Cannot connect on the connection's update thread.");

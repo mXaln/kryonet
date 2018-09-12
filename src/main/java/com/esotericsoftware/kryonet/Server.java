@@ -692,7 +692,7 @@ public class Server implements EndPoint {
 	@Override
 	public void addListener(Listener listener) {
 		if (listener == null)
-			throw new IllegalArgumentException("listener cannot be null.");
+			throw new NullPointerException("listener cannot be null.");
 		synchronized (listenerLock) {
 			Listener[] listeners = this.listeners;
 			int n = listeners.length;
@@ -712,7 +712,7 @@ public class Server implements EndPoint {
 	@Override
 	public void removeListener(Listener listener) {
 		if (listener == null)
-			throw new IllegalArgumentException("listener cannot be null.");
+			throw new NullPointerException("listener cannot be null.");
 		synchronized (listenerLock) {
 			Listener[] listeners = this.listeners;
 			int n = listeners.length;

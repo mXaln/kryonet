@@ -141,7 +141,7 @@ public interface Listener {
 
 		public QueuedListener(Listener listener) {
 			if (listener == null)
-				throw new IllegalArgumentException("listener cannot be null.");
+				throw new NullPointerException("listener cannot be null.");
 			this.listener = listener;
 		}
 
@@ -208,8 +208,7 @@ public interface Listener {
 		public ThreadedListener(Listener listener, ExecutorService threadPool) {
 			super(listener);
 			if (threadPool == null)
-				throw new IllegalArgumentException(
-						"threadPool cannot be null.");
+				throw new NullPointerException("threadPool cannot be null.");
 			this.threadPool = threadPool;
 		}
 
