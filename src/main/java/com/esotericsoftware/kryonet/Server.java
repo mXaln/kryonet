@@ -59,6 +59,9 @@ import com.esotericsoftware.kryonet.serialization.SerializationFactory;
  * @author Nathan Sweet <misc@n4te.com>
  */
 public class Server implements EndPoint {
+	public static final int DEFAULT_WRITE_BUFFER_SIZE = 16384;
+	public static final int DEFAULT_OBJECT_BUUFER_SIZE = 2048;
+
 	private final SerializationFactory serializationFactory;
 	private final int writeBufferSize, objectBufferSize;
 	private final Selector selector;
@@ -111,7 +114,7 @@ public class Server implements EndPoint {
 	 * object buffer size of <code>2048</code>.
 	 */
 	public Server() {
-		this(16384, 2048);
+		this(DEFAULT_WRITE_BUFFER_SIZE, DEFAULT_OBJECT_BUUFER_SIZE);
 	}
 
 	/**

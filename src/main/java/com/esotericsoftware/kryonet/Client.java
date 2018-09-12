@@ -69,6 +69,9 @@ public class Client extends Connection implements EndPoint {
 		}
 	}
 
+	public static final int DEFAULT_WRITE_BUFFER_SIZE = 8192;
+	public static final int DEFAULT_OBJECT_BUUFER_SIZE = 2048;
+
 	private final Serialization serialization;
 	private Selector selector;
 	private int emptySelects;
@@ -90,7 +93,7 @@ public class Client extends Connection implements EndPoint {
 	 * object buffer size of <code>2048</code>.
 	 */
 	public Client() {
-		this(8192, 2048);
+		this(DEFAULT_WRITE_BUFFER_SIZE, DEFAULT_OBJECT_BUUFER_SIZE);
 	}
 
 	/**
@@ -204,6 +207,7 @@ public class Client extends Connection implements EndPoint {
 		if (Thread.currentThread() == getUpdateThread())
 			throw new IllegalStateException(
 					"Cannot connect on the connection's update thread.");
+
 		this.connectTimeout = timeout;
 		this.connectHost = host;
 		this.connectTcpPort = tcpPort;
@@ -242,7 +246,7 @@ public class Client extends Connection implements EndPoint {
 				if (!tcpRegistered) {
 					throw new SocketTimeoutException(
 							"Connected, but timed out during TCP registration.\n"
-									+ "Note: Client#update must be called in a separate thread during connect.");
+									+ "Note: Client#update(int) must be called in a separate thread during connect.");
 				}
 			}
 
