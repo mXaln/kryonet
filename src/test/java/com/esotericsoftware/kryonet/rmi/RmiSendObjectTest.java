@@ -113,6 +113,8 @@ public class RmiSendObjectTest extends KryoNetTestCase {
 	static public void register(Kryo kryo) {
 		kryo.register(TestObject.class);
 		kryo.register(OtherObject.class/* , new RemoteObjectSerializer() */);
+		kryo.register(TestObjectImpl.class);
+		kryo.register(OtherObjectImpl.class);
 		ObjectSpace.registerClasses(kryo);
 	}
 

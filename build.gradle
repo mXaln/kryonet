@@ -7,11 +7,14 @@ targetCompatibility = 1.8
 
 repositories {
     mavenCentral()
-    maven { url 'https://jitpack.io' }
+    maven { url "https://jitpack.io" }
 }
 
 dependencies {
     compile "com.github.esotericsoftware:jsonbeans:0.9"
-    compile "com.esotericsoftware:kryo:5.0.0-RC1"
+    compile ("com.esotericsoftware:kryo:5.0.0-RC1") {
+    	exclude group: 'com.esotericsoftware', module: 'reflectasm'
+    }
+    compile "com.github.EsotericSoftware:reflectasm:master-SNAPSHOT" // fixes a problem with methods of the Object class
     testCompile "junit:junit:4.12"
 }

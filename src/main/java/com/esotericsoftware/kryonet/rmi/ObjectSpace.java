@@ -84,11 +84,11 @@ public class ObjectSpace {
 
 	static private final Object instancesLock = new Object();
 	static ObjectSpace[] instances = new ObjectSpace[0];
-	static private final HashMap<Class, CachedMethod[]> methodCache = new HashMap();
+	static private final HashMap<Class<?>, CachedMethod[]> methodCache = new HashMap<>();
 	static private boolean asm = true;
 
-	final IntMap idToObject = new IntMap();
-	final ObjectIntMap objectToID = new ObjectIntMap();
+	final IntMap<Object> idToObject = new IntMap<>();
+	final ObjectIntMap<Object> objectToID = new ObjectIntMap<>();
 	Connection[] connections = {};
 	final Object connectionsLock = new Object();
 	Executor executor;
@@ -242,7 +242,7 @@ public class ObjectSpace {
 			connections[i].removeListener(invokeListener);
 
 		synchronized (instancesLock) {
-			ArrayList<ObjectSpace> temp = new ArrayList(
+			ArrayList<ObjectSpace> temp = new ArrayList<>(
 					Arrays.asList(instances));
 			temp.remove(this);
 			instances = temp.toArray(new ObjectSpace[temp.size()]);
@@ -286,7 +286,7 @@ public class ObjectSpace {
 		connection.removeListener(invokeListener);
 
 		synchronized (connectionsLock) {
-			ArrayList<Connection> temp = new ArrayList(
+			ArrayList<Connection> temp = new ArrayList<>(
 					Arrays.asList(connections));
 			temp.remove(connection);
 			connections = temp.toArray(new Connection[temp.size()]);
@@ -401,12 +401,12 @@ public class ObjectSpace {
 	 * @see RemoteObject
 	 */
 	static public RemoteObject getRemoteObject(Connection connection,
-			int objectID, Class... ifaces) {
+			int objectID, Class<?>... ifaces) {
 		if (connection == null)
 			throw new NullPointerException("connection cannot be null.");
 		if (ifaces == null)
 			throw new NullPointerException("ifaces cannot be null.");
-		Class[] temp = new Class[ifaces.length + 1];
+		Class<?>[] temp = new Class[ifaces.length + 1];
 		temp[0] = RemoteObject.class;
 		System.arraycopy(ifaces, 0, temp, 1, ifaces.length);
 		return (RemoteObject) Proxy.newProxyInstance(
@@ -483,7 +483,7 @@ public class ObjectSpace {
 		@Override
 		public Object invoke(Object proxy, Method method, Object[] args)
 				throws Exception {
-			Class declaringClass = method.getDeclaringClass();
+			Class<?> declaringClass = method.getDeclaringClass();
 			if (declaringClass == RemoteObject.class) {
 				String name = method.getName();
 				if (name.equals("close")) {
@@ -604,7 +604,7 @@ public class ObjectSpace {
 			lastResponseID = (byte) (invokeMethod.responseData
 					& responseIdMask);
 			if (nonBlocking || udp) {
-				Class returnType = method.getReturnType();
+				Class<?> returnType = method.getReturnType();
 				if (returnType.isPrimitive()) {
 					if (returnType == int.class)
 						return 0;
@@ -705,10 +705,10 @@ public class ObjectSpace {
 			output.writeInt(cachedMethod.methodClassID, true);
 			output.writeByte(cachedMethod.methodIndex);
 
-			Serializer[] serializers = cachedMethod.serializers;
+			Serializer<?>[] serializers = cachedMethod.serializers;
 			Object[] args = this.args;
 			for (int i = 0, n = serializers.length; i < n; i++) {
-				Serializer serializer = serializers[i];
+				Serializer<?> serializer = serializers[i];
 				if (serializer != null)
 					kryo.writeObjectOrNull(output, args[i], serializer);
 				else
@@ -723,7 +723,8 @@ public class ObjectSpace {
 			objectID = input.readInt(true);
 
 			int methodClassID = input.readInt(true);
-			Class methodClass = kryo.getRegistration(methodClassID).getType();
+			Class<?> methodClass = kryo.getRegistration(methodClassID)
+					.getType();
 
 			byte methodIndex = input.readByte();
 			try {
@@ -733,12 +734,12 @@ public class ObjectSpace {
 						+ " for class: " + methodClass.getName());
 			}
 
-			Serializer[] serializers = cachedMethod.serializers;
-			Class[] parameterTypes = cachedMethod.method.getParameterTypes();
+			Serializer<?>[] serializers = cachedMethod.serializers;
+			Class<?>[] parameterTypes = cachedMethod.method.getParameterTypes();
 			Object[] args = new Object[serializers.length];
 			this.args = args;
 			for (int i = 0, n = args.length; i < n; i++) {
-				Serializer serializer = serializers[i];
+				Serializer<?> serializer = serializers[i];
 				if (serializer != null)
 					args[i] = kryo.readObjectOrNull(input, parameterTypes[i],
 							serializer);
@@ -759,7 +760,7 @@ public class ObjectSpace {
 		public Object result;
 	}
 
-	static CachedMethod[] getMethods(Kryo kryo, Class type) {
+	static CachedMethod[] getMethods(Kryo kryo, Class<?> type) {
 		CachedMethod[] cachedMethods = methodCache.get(type); // Maybe should
 																// cache per
 																// Kryo
@@ -767,15 +768,15 @@ public class ObjectSpace {
 		if (cachedMethods != null)
 			return cachedMethods;
 
-		ArrayList<Method> allMethods = new ArrayList();
-		Class nextClass = type;
+		ArrayList<Method> allMethods = new ArrayList<>();
+		Class<?> nextClass = type;
 		while (nextClass != null) {
 			Collections.addAll(allMethods, nextClass.getDeclaredMethods());
 			nextClass = nextClass.getSuperclass();
 			if (nextClass == Object.class)
 				break;
 		}
-		ArrayList<Method> methods = new ArrayList(
+		ArrayList<Method> methods = new ArrayList<>(
 				Math.max(1, allMethods.size()));
 		for (int i = 0, n = allMethods.size(); i < n; i++) {
 			Method method = allMethods.get(i);
@@ -965,7 +966,7 @@ public class ObjectSpace {
 		Method method;
 		int methodClassID;
 		int methodIndex;
-		Serializer[] serializers;
+		Serializer<?>[] serializers;
 
 		public Object invoke(Object target, Object[] args)
 				throws IllegalAccessException, InvocationTargetException {

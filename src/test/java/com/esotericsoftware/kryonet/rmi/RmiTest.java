@@ -20,9 +20,11 @@
 package com.esotericsoftware.kryonet.rmi;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collections;
 
 import com.esotericsoftware.kryo.Kryo;
+import com.esotericsoftware.kryo.serializers.JavaSerializer;
 import com.esotericsoftware.kryonet.Client;
 import com.esotericsoftware.kryonet.Connection;
 import com.esotericsoftware.kryonet.KryoNetTestCase;
@@ -59,8 +61,8 @@ public class RmiTest extends KryoNetTestCase {
 				if (!(object instanceof MessageWithTestObject))
 					return;
 				MessageWithTestObject m = (MessageWithTestObject) object;
-				System.out.println(serverTestObject.value);
-				System.out.println(((TestObjectImpl) m.testObject).value);
+				// System.out.println(serverTestObject.value);
+				// System.out.println(((TestObjectImpl) m.testObject).value);
 				assertEquals(4321f, m.testObject.other());
 				stopEndPoints(2000);
 			}
@@ -85,8 +87,8 @@ public class RmiTest extends KryoNetTestCase {
 				if (!(object instanceof MessageWithTestObject))
 					return;
 				MessageWithTestObject m = (MessageWithTestObject) object;
-				System.out.println(clientTestObject.value);
-				System.out.println(((TestObjectImpl) m.testObject).value);
+				// System.out.println(clientTestObject.value);
+				// System.out.println(((TestObjectImpl) m.testObject).value);
 				assertEquals(1234f, m.testObject.other());
 				stopEndPoints(2000);
 			}
@@ -266,15 +268,23 @@ public class RmiTest extends KryoNetTestCase {
 	static public void register(Kryo kryo) {
 		kryo.register(Object.class); // Needed for Object#toString, hashCode,
 										// etc.
-		kryo.register(Collections.EMPTY_LIST.getClass());
+
 		kryo.register(TestObject.class);
+		kryo.register(TestObjectImpl.class);
 		kryo.register(MessageWithTestObject.class);
-		kryo.register(StackTraceElement.class);
-		kryo.register(StackTraceElement[].class);
+
 		kryo.register(UnsupportedOperationException.class);
+		// Needed for throwable:
+		kryo.register(StackTraceElement[].class);
+		kryo.register(StackTraceElement.class);
+		kryo.register(
+				Collections.unmodifiableList(new ArrayList<>(1)).getClass(),
+				new JavaSerializer()); // Java 1.8
+		// kryo.register(Collections.EMPTY_LIST.getClass()); //Java 1.9+
 		kryo.setReferences(true); // Needed for UnsupportedOperationException,
 									// which has a circular reference in the
 									// cause field.
+
 		ObjectSpace.registerClasses(kryo);
 	}
 
