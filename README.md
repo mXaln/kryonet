@@ -1,6 +1,6 @@
 ![KryoNet](https://raw.github.com/wiki/EsotericSoftware/kryonet/images/logo.jpg)
 
-[![Release](https://jitpack.io/v/crykn/kryonet.svg)](https://jitpack.io/#crykn/kryonet) [![Build Status](https://travis-ci.com/crykn/kryonet.svg?branch=master)](https://travis-ci.com/crykn/kryonet)
+[![Release](https://jitpack.io/v/crykn/kryonet.svg)](https://jitpack.io/#crykn/kryonet)
 
 A fork of [KryoNet](https://github.com/EsotericSoftware/kryonet/), a Java library that provides a clean and simple API for efficient network communication.
 
@@ -14,7 +14,7 @@ This fork was specifically made for [ProjektGG](https://github.com/eskalon/Proje
 * The LAN Host Discovery is now available to Non-Kryo-Serializations ([#127](https://github.com/EsotericSoftware/kryonet/issues/127))
 * Serializers are now created by [factories](https://github.com/crykn/kryonet/blob/master/src/main/java/com/esotericsoftware/kryonet/serialization/SerializationFactory.java) (see the respective paragraph below)
 * Kryonet now uses a [gradle](https://gradle.org/) build setup
-* Java 8 is supported
+* Java 9 is supported
 * Various improvements to the documentation (also takes care of [#35](https://github.com/EsotericSoftware/kryonet/issues/35), [#44](https://github.com/EsotericSoftware/kryonet/issues/44), [#124](https://github.com/EsotericSoftware/kryonet/issues/124))
 
 ## Usage of the TypeListener

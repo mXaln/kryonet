@@ -2,8 +2,8 @@ apply plugin: "java"
 
 version '2.22.3'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.9
+targetCompatibility = 1.9
 
 repositories {
     mavenCentral()
