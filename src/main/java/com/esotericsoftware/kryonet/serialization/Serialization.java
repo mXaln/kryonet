@@ -21,21 +21,36 @@ package com.esotericsoftware.kryonet.serialization;
 
 import java.nio.ByteBuffer;
 
+import com.esotericsoftware.kryonet.Connection;
+
 /**
  * Controls how objects are transmitted over the network.
  * <p>
- * Every client connection on the server uses a separate instance for TCP
- * transmissions and the <i>same</i> instance for UDP ones. Therefore all
- * implementing classes have to be synchronized or made thread-safe otherwise.
+ * The server as well as each client holds <i>one</i> serialization instance.
+ * Therefore all implementing classes have to be synchronized or made
+ * thread-safe otherwise.
  */
 public interface Serialization {
 
-	public void write(ByteBuffer buffer, Object object);
-
-	public Object read(ByteBuffer buffer);
+	/**
+	 * @param connection
+	 *            May be <code>null</code>.
+	 * @param buffer
+	 * @param object
+	 */
+	public void write(Connection connection, ByteBuffer buffer, Object object);
 
 	/**
-	 * The fixed number of bytes that will be written by
+	 * @param connection
+	 *            May be <code>null</code>.
+	 * @param buffer
+	 * @return
+	 */
+	public Object read(Connection connection, ByteBuffer buffer);
+
+	/**
+	 * The length of the header indicating the length of the following data,
+	 * i.e. the fixed number of bytes that will be written by
 	 * {@link #writeLength(ByteBuffer, int)} and read by
 	 * {@link #readLength(ByteBuffer)}.
 	 */

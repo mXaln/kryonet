@@ -59,8 +59,6 @@ public class RmiTest extends KryoNetTestCase {
 				if (!(object instanceof MessageWithTestObject))
 					return;
 				MessageWithTestObject m = (MessageWithTestObject) object;
-				// System.out.println(serverTestObject.value);
-				// System.out.println(((TestObjectImpl) m.testObject).value);
 				assertEquals(4321f, m.testObject.other());
 				stopEndPoints(2000);
 			}
@@ -85,8 +83,6 @@ public class RmiTest extends KryoNetTestCase {
 				if (!(object instanceof MessageWithTestObject))
 					return;
 				MessageWithTestObject m = (MessageWithTestObject) object;
-				// System.out.println(clientTestObject.value);
-				// System.out.println(((TestObjectImpl) m.testObject).value);
 				assertEquals(1234f, m.testObject.other());
 				stopEndPoints(2000);
 			}
@@ -168,7 +164,7 @@ public class RmiTest extends KryoNetTestCase {
 		waitForThreads();
 	}
 
-	static public void runTest(final Connection connection, final int id,
+	public static void runTest(final Connection connection, final int id,
 			final float other) {
 		new Thread() {
 			public void run() {
@@ -176,9 +172,8 @@ public class RmiTest extends KryoNetTestCase {
 						TestObject.class);
 				RemoteObject remoteObject = (RemoteObject) test;
 				// Default behavior. RMI is transparent, method calls behave
-				// like normal
-				// (return values and exceptions are returned, call is
-				// synchronous)
+				// like normal (return values and exceptions are returned, call
+				// is synchronous)
 				System.out.println("hashCode: " + test.hashCode());
 				System.out.println("toString: " + test);
 				test.moo();
@@ -209,7 +204,6 @@ public class RmiTest extends KryoNetTestCase {
 
 				// Return values are ignored, but exceptions are still dealt
 				// with properly
-
 				remoteObject.setTransmitReturnValue(false);
 				test.moo("Baa");
 				test.other();
@@ -263,7 +257,7 @@ public class RmiTest extends KryoNetTestCase {
 	 * Registers the same classes in the same order on both the client and
 	 * server.
 	 */
-	static public void register(Kryo kryo) {
+	public static void register(Kryo kryo) {
 		kryo.register(Object.class); // Needed for Object#toString, hashCode,
 										// etc.
 
@@ -285,7 +279,7 @@ public class RmiTest extends KryoNetTestCase {
 		ObjectSpace.registerClasses(kryo);
 	}
 
-	static public interface TestObject {
+	public static interface TestObject {
 		public void throwException();
 
 		public void moo();
@@ -299,7 +293,7 @@ public class RmiTest extends KryoNetTestCase {
 		public float slow();
 	}
 
-	static public class TestObjectImpl implements TestObject {
+	public static class TestObjectImpl implements TestObject {
 		public long value = System.currentTimeMillis();
 		private final float other;
 		public int moos;
@@ -345,7 +339,7 @@ public class RmiTest extends KryoNetTestCase {
 		}
 	}
 
-	static public class MessageWithTestObject {
+	public static class MessageWithTestObject {
 		public int number;
 		public String text;
 		public TestObject testObject;

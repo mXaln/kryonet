@@ -36,7 +36,19 @@ import com.esotericsoftware.kryonet.serialization.Serialization;
 /**
  * @author Nathan Sweet <misc@n4te.com>
  */
-class UdpConnection {
+public class UdpConnection {
+
+	/**
+	 * If this is set to <code>false</code> (as is default)
+	 * {@link #readFromAddress()} checks whether the used datagram channel is
+	 * connected before receiving from it. This is necessary to fix a bug in
+	 * Android 5 and 6 (https://github.com/EsotericSoftware/kryonet/issues/106).
+	 * <p>
+	 * As this fix seems to prolong the connection time it can be disabled by
+	 * setting this variable to <code>true</code>.
+	 */
+	public static boolean androidFixDisabled = false;
+
 	InetSocketAddress connectedAddress;
 	DatagramChannel datagramChannel;
 	int keepAliveMillis = 19000;
@@ -103,7 +115,7 @@ class UdpConnection {
 			throw new SocketException("Connection is closed.");
 		lastCommunicationTime = System.currentTimeMillis();
 
-		if (!datagramChannel.isConnected())
+		if (androidFixDisabled || !datagramChannel.isConnected())
 			return (InetSocketAddress) datagramChannel.receive(readBuffer); // always
 																			// null
 																			// on
@@ -114,11 +126,11 @@ class UdpConnection {
 		return connectedAddress;
 	}
 
-	public Object readObject() {
+	public Object readObject(Connection connection) {
 		readBuffer.flip();
 		try {
 			try {
-				Object object = serialization.read(readBuffer);
+				Object object = serialization.read(connection, readBuffer);
 				if (readBuffer.hasRemaining())
 					throw new KryoNetException("Incorrect number of bytes ("
 							+ readBuffer.remaining()
@@ -134,16 +146,17 @@ class UdpConnection {
 	}
 
 	/**
-	 * This method is thread safe.
+	 * This method is thread safe. The used serialization may not!
 	 */
-	public int send(Object object, SocketAddress address) throws IOException {
+	public int send(Connection connection, Object object, SocketAddress address)
+			throws IOException {
 		DatagramChannel datagramChannel = this.datagramChannel;
 		if (datagramChannel == null)
 			throw new SocketException("Connection is closed.");
 		synchronized (writeLock) {
 			try {
 				try {
-					serialization.write(writeBuffer, object);
+					serialization.write(connection, writeBuffer, object);
 				} catch (Exception ex) {
 					throw new KryoNetException(
 							"Error serializing object of type: "

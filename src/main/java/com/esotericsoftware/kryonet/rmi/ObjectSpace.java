@@ -55,7 +55,7 @@ import com.esotericsoftware.kryonet.EndPoint;
 import com.esotericsoftware.kryonet.FrameworkMessage;
 import com.esotericsoftware.kryonet.KryoNetException;
 import com.esotericsoftware.kryonet.Listener;
-import com.esotericsoftware.kryonet.serialization.KryoSerializationFactory.KryoSerialization;
+import com.esotericsoftware.kryonet.serialization.KryoSerialization;
 import com.esotericsoftware.kryonet.util.ObjectIntMap;
 import com.esotericsoftware.reflectasm.MethodAccess;
 
@@ -85,7 +85,7 @@ public class ObjectSpace {
 	static private final Object instancesLock = new Object();
 	static ObjectSpace[] instances = new ObjectSpace[0];
 	static private final HashMap<Class<?>, CachedMethod[]> methodCache = new HashMap<>();
-	static private boolean asm = true;
+	static private boolean useAsm = true;
 
 	final IntMap<Object> idToObject = new IntMap<>();
 	final ObjectIntMap<Object> objectToID = new ObjectIntMap<>();
@@ -131,14 +131,6 @@ public class ObjectSpace {
 		@Override
 		public void disconnected(Connection connection) {
 			removeConnection(connection);
-		}
-
-		@Override
-		public void connected(Connection connection) {
-		}
-
-		@Override
-		public void idle(Connection connection) {
 		}
 	};
 
@@ -815,7 +807,7 @@ public class ObjectSpace {
 		});
 
 		Object methodAccess = null;
-		if (asm && !Util.isAndroid && Modifier.isPublic(type.getModifiers()))
+		if (useAsm && !Util.isAndroid && Modifier.isPublic(type.getModifiers()))
 			methodAccess = MethodAccess.get(type);
 
 		int n = methods.size();
@@ -945,6 +937,10 @@ public class ObjectSpace {
 				int objectID = input.readInt(true);
 				Connection connection = (Connection) kryo.getContext()
 						.get("connection");
+				if (connection == null)
+					throw new KryoException(
+							"Connection in kryo context cannot be null",
+							new NullPointerException());
 				Object object = getRegisteredObject(connection, objectID);
 				if (WARN && object == null)
 					warn("kryonet", "Unknown object ID " + objectID
@@ -955,11 +951,11 @@ public class ObjectSpace {
 	}
 
 	/**
-	 * If true, an attempt will be made to use ReflectASM for invoking methods.
-	 * Default is true.
+	 * If <code>true</code>, an attempt will be made to use ReflectASM for
+	 * invoking methods. Default is <code>true</code>.
 	 */
 	static public void setAsm(boolean asm) {
-		ObjectSpace.asm = asm;
+		ObjectSpace.useAsm = asm;
 	}
 
 	static class CachedMethod {
@@ -1001,6 +997,10 @@ public class ObjectSpace {
 		public void write(Kryo kryo, Output output, Object object) {
 			Connection connection = (Connection) kryo.getContext()
 					.get("connection");
+			if (connection == null)
+				throw new KryoException(
+						"Connection in kryo context cannot be null",
+						new NullPointerException());
 			int id = getRegisteredID(connection, object);
 			if (id == Integer.MAX_VALUE)
 				throw new KryoNetException(
@@ -1013,6 +1013,10 @@ public class ObjectSpace {
 			int objectID = input.readInt(true);
 			Connection connection = (Connection) kryo.getContext()
 					.get("connection");
+			if (connection == null)
+				throw new KryoException(
+						"Connection in kryo context cannot be null",
+						new NullPointerException());
 			return ObjectSpace.getRemoteObject(connection, objectID, type);
 		}
 	}

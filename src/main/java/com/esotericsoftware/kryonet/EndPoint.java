@@ -22,7 +22,7 @@ package com.esotericsoftware.kryonet;
 import java.io.IOException;
 
 import com.esotericsoftware.kryo.Kryo;
-import com.esotericsoftware.kryonet.serialization.KryoSerializationFactory.KryoSerialization;
+import com.esotericsoftware.kryonet.serialization.KryoSerialization;
 
 /**
  * Represents the local end point of a connection.

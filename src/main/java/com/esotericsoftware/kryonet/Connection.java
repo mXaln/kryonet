@@ -109,7 +109,7 @@ public class Connection {
 		if (object == null)
 			throw new NullPointerException("object to send cannot be null.");
 		try {
-			int length = tcp.send(object);
+			int length = tcp.send(this, object);
 			if (length == 0) {
 				if (TRACE)
 					trace("kryonet", this + " TCP had nothing to send.");
@@ -162,7 +162,7 @@ public class Connection {
 			if (address == null)
 				throw new SocketException("Connection is closed.");
 
-			int length = udp.send(object, address);
+			int length = udp.send(this, object, address);
 			if (length == 0) {
 				if (TRACE)
 					trace("kryonet", this + " UDP had nothing to send.");

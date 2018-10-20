@@ -39,7 +39,7 @@ import com.esotericsoftware.kryonet.serialization.Serialization;
  * @author Nathan Sweet <misc@n4te.com>
  */
 class TcpConnection {
-	static private final int IPTOS_LOWDELAY = 0x10;
+	private static final int IPTOS_LOWDELAY = 0x10;
 
 	SocketChannel socketChannel;
 	int keepAliveMillis = 8000;
@@ -130,7 +130,7 @@ class TcpConnection {
 		}
 	}
 
-	public Object readObject() throws IOException {
+	public Object readObject(Connection connection) throws IOException {
 		SocketChannel socketChannel = this.socketChannel;
 		if (socketChannel == null)
 			throw new SocketException("Connection is closed.");
@@ -180,7 +180,7 @@ class TcpConnection {
 		readBuffer.limit(startPosition + length);
 		Object object;
 		try {
-			object = serialization.read(readBuffer);
+			object = serialization.read(connection, readBuffer);
 		} catch (Exception ex) {
 			throw new KryoNetException("Error during deserialization.", ex);
 		}
@@ -230,10 +230,11 @@ class TcpConnection {
 	 * <p>
 	 * This method is thread-safe.
 	 * 
+	 * @param connection
 	 * @param object
 	 *            the object to send.
 	 */
-	public int send(Object object) throws IOException {
+	public int send(Connection connection, Object object) throws IOException {
 		SocketChannel socketChannel = this.socketChannel;
 		if (socketChannel == null)
 			throw new SocketException("Connection is closed.");
@@ -247,7 +248,7 @@ class TcpConnection {
 				writeBuffer.position(writeBuffer.position() + lengthLength);
 
 				// Write data.
-				serialization.write(writeBuffer, object);
+				serialization.write(connection, writeBuffer, object);
 			} catch (Throwable ex) {
 				throw new KryoNetException("Error serializing object of type: "
 						+ object.getClass().getName(), ex);

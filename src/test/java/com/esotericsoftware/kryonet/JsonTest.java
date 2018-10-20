@@ -22,7 +22,7 @@ package com.esotericsoftware.kryonet;
 import java.io.IOException;
 import java.util.Arrays;
 
-import com.esotericsoftware.kryonet.serialization.JsonSerializationFactory;
+import com.esotericsoftware.kryonet.serialization.JsonSerialization;
 
 public class JsonTest extends KryoNetTestCase {
 	String fail;
@@ -36,7 +36,7 @@ public class JsonTest extends KryoNetTestCase {
 		populateData(dataUDP, false);
 
 		final Server server = new Server(16384, 8192,
-				new JsonSerializationFactory());
+				new JsonSerialization());
 		startEndPoint(server);
 		server.bind(tcpPort, udpPort);
 		server.addListener(new Listener() {
@@ -73,7 +73,7 @@ public class JsonTest extends KryoNetTestCase {
 		// ----
 
 		final Client client = new Client(16384, 8192,
-				new JsonSerializationFactory());
+				new JsonSerialization());
 		startEndPoint(client);
 		client.addListener(new Listener() {
 			public void received(Connection connection, Object object) {

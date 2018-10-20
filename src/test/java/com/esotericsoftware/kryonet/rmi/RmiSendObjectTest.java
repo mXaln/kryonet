@@ -28,6 +28,7 @@ import com.esotericsoftware.kryonet.KryoNetTestCase;
 import com.esotericsoftware.kryonet.Listener;
 import com.esotericsoftware.kryonet.Listener.ThreadedListener;
 import com.esotericsoftware.kryonet.Server;
+import com.esotericsoftware.kryonet.rmi.ObjectSpace.RemoteObjectSerializer;
 
 public class RmiSendObjectTest extends KryoNetTestCase {
 	/**
@@ -40,14 +41,12 @@ public class RmiSendObjectTest extends KryoNetTestCase {
 		register(serverKryo);
 
 		// After all common registrations, register OtherObjectImpl only on the
-		// server
-		// using the remote object interface ID.
+		// server using the remote object interface ID.
 		// This causes OtherObjectImpl to be serialized as OtherObject.
-		// int otherObjectID =
-		// serverKryo.getRegistration(OtherObject.class).getId();
-		// serverKryo.register(OtherObjectImpl.class, new
-		// RemoteObjectSerializer(),
-		// otherObjectID);
+		int otherObjectID = serverKryo.getRegistration(OtherObject.class)
+				.getId();
+		serverKryo.register(OtherObjectImpl.class, new RemoteObjectSerializer(),
+				otherObjectID);
 
 		startEndPoint(server);
 		server.bind(tcpPort);
@@ -58,8 +57,8 @@ public class RmiSendObjectTest extends KryoNetTestCase {
 
 		// Both objects must be registered with the ObjectSpace.
 		final ObjectSpace serverObjectSpace = new ObjectSpace();
-		serverObjectSpace.register(42, serverTestObject);
 		serverObjectSpace.register(777, serverTestObject.getOtherObject());
+		serverObjectSpace.register(42, serverTestObject);
 
 		server.addListener(new Listener() {
 			public void connected(final Connection connection) {
@@ -82,8 +81,7 @@ public class RmiSendObjectTest extends KryoNetTestCase {
 		startEndPoint(client);
 
 		// The ThreadedListener means the network thread won't be blocked when
-		// waiting
-		// for RMI responses.
+		// waiting for RMI responses.
 		client.addListener(new ThreadedListener(new Listener() {
 			public void connected(final Connection connection) {
 				TestObject test = ObjectSpace.getRemoteObject(connection, 42,
@@ -96,8 +94,7 @@ public class RmiSendObjectTest extends KryoNetTestCase {
 				// Normal remote method call on the second object.
 				assertEquals(12.34f, otherObject.value());
 				// When a remote proxy object is sent, the other side recieves
-				// its actual remote
-				// object.
+				// its actual remote object.
 				connection.sendTCP(otherObject);
 			}
 		}));
@@ -112,9 +109,7 @@ public class RmiSendObjectTest extends KryoNetTestCase {
 	 */
 	static public void register(Kryo kryo) {
 		kryo.register(TestObject.class);
-		kryo.register(OtherObject.class/* , new RemoteObjectSerializer() */);
-		kryo.register(TestObjectImpl.class);
-		kryo.register(OtherObjectImpl.class);
+		kryo.register(OtherObject.class, new RemoteObjectSerializer());
 		ObjectSpace.registerClasses(kryo);
 	}
 
