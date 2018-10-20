@@ -27,6 +27,9 @@ import com.esotericsoftware.kryo.Kryo;
 public class PingPongTest extends KryoNetTestCase {
 	String fail;
 
+	int udpCount = 5500;
+	int tcpCount = 5500;
+
 	public void testPingPong() throws IOException {
 		fail = null;
 
@@ -54,13 +57,25 @@ public class PingPongTest extends KryoNetTestCase {
 							fail = "TCP data is not equal on server.";
 							throw new RuntimeException("Fail!");
 						}
-						connection.sendTCP(data);
+						tcpCount--;
+
+						if (tcpCount > 0)
+							connection.sendTCP(data);
+						else if (udpCount <= 0)
+							stopEndPoints();
 					} else {
 						if (!data.equals(dataUDP)) {
+
 							fail = "UDP data is not equal on server.";
 							throw new RuntimeException("Fail!");
 						}
-						connection.sendUDP(data);
+
+						udpCount--;
+
+						if (udpCount > 0)
+							connection.sendUDP(data);
+						else if (tcpCount <= 0)
+							stopEndPoints();
 					}
 				}
 			}
