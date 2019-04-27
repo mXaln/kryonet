@@ -1,6 +1,6 @@
 apply plugin: "java"
 
-version '2.22.4'
+version '2.22.5'
 group 'com.esotericsoftware'
 
 sourceCompatibility = 1.8
