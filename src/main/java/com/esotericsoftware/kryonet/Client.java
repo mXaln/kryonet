@@ -29,12 +29,7 @@ import static com.esotericsoftware.minlog.Log.info;
 import static com.esotericsoftware.minlog.Log.trace;
 
 import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.InetSocketAddress;
-import java.net.NetworkInterface;
-import java.net.SocketTimeoutException;
+import java.net.*;
 import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
@@ -610,23 +605,22 @@ public class Client extends Connection implements EndPoint {
 		dataBuffer.get(data);
 		for (NetworkInterface iface : Collections
 				.list(NetworkInterface.getNetworkInterfaces())) {
-			for (InetAddress address : Collections
-					.list(iface.getInetAddresses())) {
-				// Java 1.5 doesn't support getting the subnet mask, so try the
-				// two most common.
-				byte[] ip = address.getAddress();
-				ip[3] = -1; // 255.255.255.0
+			if (iface.isLoopback())
+				continue;
+
+			for (InterfaceAddress address : iface.getInterfaceAddresses())
+			{
+				InetAddress broadcast = address.getBroadcast();
+				if (broadcast == null)
+					continue;
+
 				try {
 					socket.send(new DatagramPacket(data, data.length,
-							InetAddress.getByAddress(ip), udpPort));
+							broadcast, udpPort));
 				} catch (Exception ignored) {
 				}
-				ip[2] = -1; // 255.255.0.0
-				try {
-					socket.send(new DatagramPacket(data, data.length,
-							InetAddress.getByAddress(ip), udpPort));
-				} catch (Exception ignored) {
-				}
+
+				System.out.println("Discovering host on " + broadcast.getHostAddress());
 			}
 		}
 		if (DEBUG)
