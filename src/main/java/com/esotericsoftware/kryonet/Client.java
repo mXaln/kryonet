@@ -30,6 +30,7 @@ import static com.esotericsoftware.minlog.Log.trace;
 
 import java.io.IOException;
 import java.net.*;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
@@ -600,7 +601,7 @@ public class Client extends Connection implements EndPoint {
 			throws IOException {
 		ByteBuffer dataBuffer = ByteBuffer.allocate(64);
 		serialization.write(null, dataBuffer, new DiscoverHost());
-		dataBuffer.flip();
+		((Buffer)dataBuffer).flip();
 		byte[] data = new byte[dataBuffer.limit()];
 		dataBuffer.get(data);
 		for (NetworkInterface iface : Collections

@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.net.Socket;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
@@ -59,14 +60,14 @@ class TcpConnection {
 		this.serialization = serialization;
 		writeBuffer = ByteBuffer.allocate(writeBufferSize);
 		readBuffer = ByteBuffer.allocate(objectBufferSize);
-		readBuffer.flip();
+		((Buffer)readBuffer).flip();
 	}
 
 	public SelectionKey accept(Selector selector, SocketChannel socketChannel)
 			throws IOException {
-		writeBuffer.clear();
-		readBuffer.clear();
-		readBuffer.flip();
+		((Buffer)writeBuffer).clear();
+		((Buffer)readBuffer).clear();
+		((Buffer)readBuffer).flip();
 		currentObjectLength = 0;
 		try {
 			this.socketChannel = socketChannel;
@@ -95,9 +96,9 @@ class TcpConnection {
 	public void connect(Selector selector, SocketAddress remoteAddress,
 			int timeout) throws IOException {
 		close();
-		writeBuffer.clear();
-		readBuffer.clear();
-		readBuffer.flip();
+		((Buffer)writeBuffer).clear();
+		((Buffer)readBuffer).clear();
+		((Buffer)readBuffer).flip();
 		currentObjectLength = 0;
 		try {
 			SocketChannel socketChannel = selector.provider()
@@ -141,7 +142,7 @@ class TcpConnection {
 			if (readBuffer.remaining() < lengthLength) {
 				readBuffer.compact();
 				int bytesRead = socketChannel.read(readBuffer);
-				readBuffer.flip();
+				((Buffer)readBuffer).flip();
 				if (bytesRead == -1)
 					throw new SocketException("Connection is closed.");
 				lastReadTime = System.currentTimeMillis();
@@ -165,7 +166,7 @@ class TcpConnection {
 			// Fill the tcpInputStream.
 			readBuffer.compact();
 			int bytesRead = socketChannel.read(readBuffer);
-			readBuffer.flip();
+			((Buffer)readBuffer).flip();
 			if (bytesRead == -1)
 				throw new SocketException("Connection is closed.");
 			lastReadTime = System.currentTimeMillis();
@@ -210,11 +211,11 @@ class TcpConnection {
 			throw new SocketException("Connection is closed.");
 
 		ByteBuffer buffer = writeBuffer;
-		buffer.flip();
+		((Buffer)buffer).flip();
 		while (buffer.hasRemaining()) {
 			if (bufferPositionFix) {
 				buffer.compact();
-				buffer.flip();
+				((Buffer)buffer).flip();
 			}
 			if (socketChannel.write(buffer) == 0)
 				break;

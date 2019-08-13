@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.SocketException;
+import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.nio.channels.SelectionKey;
@@ -67,8 +68,8 @@ public class UdpConnection {
 	public void bind(Selector selector, InetSocketAddress localPort)
 			throws IOException {
 		close();
-		readBuffer.clear();
-		writeBuffer.clear();
+		((Buffer)readBuffer).clear();
+		((Buffer)writeBuffer).clear();
 		try {
 			datagramChannel = selector.provider().openDatagramChannel();
 			datagramChannel.socket().bind(localPort);
@@ -86,8 +87,8 @@ public class UdpConnection {
 	public void connect(Selector selector, InetSocketAddress remoteAddress)
 			throws IOException {
 		close();
-		readBuffer.clear();
-		writeBuffer.clear();
+		((Buffer)readBuffer).clear();
+		((Buffer)writeBuffer).clear();
 		try {
 			datagramChannel = selector.provider().openDatagramChannel();
 			datagramChannel.socket().bind(null);
@@ -127,7 +128,7 @@ public class UdpConnection {
 	}
 
 	public Object readObject(Connection connection) {
-		readBuffer.flip();
+		((Buffer)readBuffer).flip();
 		try {
 			try {
 				Object object = serialization.read(connection, readBuffer);
@@ -141,7 +142,7 @@ public class UdpConnection {
 				throw new KryoNetException("Error during deserialization.", ex);
 			}
 		} finally {
-			readBuffer.clear();
+			((Buffer)readBuffer).clear();
 		}
 	}
 
@@ -163,7 +164,7 @@ public class UdpConnection {
 									+ object.getClass().getName(),
 							ex);
 				}
-				writeBuffer.flip();
+				((Buffer)writeBuffer).flip();
 				int length = writeBuffer.limit();
 				datagramChannel.send(writeBuffer, address);
 
@@ -172,7 +173,7 @@ public class UdpConnection {
 				boolean wasFullWrite = !writeBuffer.hasRemaining();
 				return wasFullWrite ? length : -1;
 			} finally {
-				writeBuffer.clear();
+				((Buffer)writeBuffer).clear();
 			}
 		}
 	}
