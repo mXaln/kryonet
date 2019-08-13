@@ -1,6 +1,6 @@
 apply plugin: "java"
 
-version '2.22.5'
+version '2.22.6'
 group 'com.esotericsoftware'
 
 sourceCompatibility = 1.8
@@ -20,9 +20,9 @@ test {
 
 dependencies {
     compile "com.github.esotericsoftware:jsonbeans:0.9"
-    compile ("com.esotericsoftware:kryo:5.0.0-RC1") {
+    compile ("com.esotericsoftware:kryo:5.0.0-RC4") {
     	exclude group: 'com.esotericsoftware', module: 'reflectasm'
     }
-    compile "com.github.EsotericSoftware:reflectasm:master-SNAPSHOT" // fixes a problem with methods of the Object class
+    compile "com.github.EsotericSoftware:reflectasm:1.11.9"
     testCompile "junit:junit:4.12"
 }
