@@ -53,6 +53,6 @@ allprojects {
 }
 	
 dependencies {
-   compile 'com.github.mXaln:kryonet:2.22.7'
+   compile 'com.github.mXaln:kryonet:2.22.9'
 }
 ```
