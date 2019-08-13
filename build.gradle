@@ -1,6 +1,6 @@
 apply plugin: "java"
 
-version '2.22.6'
+version '2.22.7'
 group 'com.esotericsoftware'
 
 sourceCompatibility = 1.8
@@ -23,6 +23,6 @@ dependencies {
     compile ("com.esotericsoftware:kryo:5.0.0-RC4") {
     	exclude group: 'com.esotericsoftware', module: 'reflectasm'
     }
-    compile "com.github.EsotericSoftware:reflectasm:1.11.9"
+    compile "com.esotericsoftware:reflectasm:1.11.9"
     testCompile "junit:junit:4.12"
 }
