@@ -1,10 +1,10 @@
 apply plugin: "java"
 
-version '2.22.9'
+version '2.23.1'
 group 'com.esotericsoftware'
 
-sourceCompatibility = 1.8
-targetCompatibility = 1.8
+sourceCompatibility = 1.7
+targetCompatibility = 1.7
 
 repositories {
     mavenCentral()
@@ -20,7 +20,7 @@ test {
 
 dependencies {
     compile "com.github.esotericsoftware:jsonbeans:0.9"
-    compile ("com.esotericsoftware:kryo:5.0.0-RC4") {
+    compile ("com.esotericsoftware:kryo:5.0.0-RC1") {
     	exclude group: 'com.esotericsoftware', module: 'reflectasm'
     }
     compile "com.esotericsoftware:reflectasm:1.11.9"

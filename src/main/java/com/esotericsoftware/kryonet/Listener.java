@@ -19,13 +19,11 @@
 
 package com.esotericsoftware.kryonet;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.function.BiConsumer;
 
 /**
  * Used to be notified about connection events.
@@ -38,15 +36,13 @@ public interface Listener {
 	 * {@link Server#update(int)}. This method should not block for long periods
 	 * as other network activity will not be processed until it returns.
 	 */
-	public default void connected(Connection connection) {
-	}
+	void connected(Connection connection);
 
 	/**
 	 * Called when the remote end is no longer connected. There is no guarantee
 	 * as to what thread will invoke this method.
 	 */
-	public default void disconnected(Connection connection) {
-	}
+	void disconnected(Connection connection);
 
 	/**
 	 * Called when an object has been received from the remote end of the
@@ -55,15 +51,13 @@ public interface Listener {
 	 * should not block for long periods as other network activity will not be
 	 * processed until it returns.
 	 */
-	public default void received(Connection connection, Object object) {
-	}
+	void received(Connection connection, Object object);
 
 	/**
 	 * Called when the connection is below the
 	 * {@link Connection#setIdleThreshold(float) idle threshold}.
 	 */
-	public default void idle(Connection connection) {
-	}
+	void idle(Connection connection);
 
 	/**
 	 * Wraps the listener interface and implements
@@ -85,62 +79,6 @@ public interface Listener {
 
 		@Override
 		public void idle(Connection connection) {
-		}
-
-	}
-
-	/**
-	 * A type listener for KryoNet for conveniently taking care of received
-	 * objects.
-	 * <p>
-	 * Note that this class uses a HashMap lookup, so is not as efficient as
-	 * writing a series of simple "instanceof" statements.
-	 * <p>
-	 * To add a handler for a specific type use
-	 * {@link #addHandler(Class, BiConsumer)}.
-	 */
-	static public class TypeListener implements Listener {
-
-		/**
-		 * All type handlers.
-		 */
-		@SuppressWarnings("rawtypes")
-		private final HashMap<Class<?>, BiConsumer> listeners = new HashMap<>();
-
-		public TypeListener() {
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public void received(Connection con, Object msg) {
-			if (listeners.containsKey(msg.getClass())) {
-				listeners.get(msg.getClass()).accept(con, msg);
-			}
-		}
-
-		/**
-		 * Adds a handler for a specific type.
-		 * 
-		 * @param clazz
-		 *            The class of the type.
-		 * @param listener
-		 *            The listener.
-		 */
-		public <T> void addTypeHandler(Class<T> clazz,
-				BiConsumer<? super Connection, ? super T> listener) {
-			listeners.put(clazz, listener);
-		}
-
-		public <T> void removeTypeHandler(Class<T> clazz) {
-			listeners.remove(clazz);
-		}
-
-		public int size() {
-			return listeners.size();
-		}
-
-		public void clear() {
-			listeners.clear();
 		}
 
 	}

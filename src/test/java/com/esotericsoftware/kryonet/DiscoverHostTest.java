@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
+import java.util.Map;
 
 import com.esotericsoftware.kryo.io.Input;
 
@@ -52,7 +53,7 @@ public class DiscoverHostTest extends KryoNetTestCase {
 		// ----
 
 		Client client = new Client();
-		InetAddress host = client.discoverHost(udpPort, 2000);
+		Map.Entry<String, InetAddress> host = client.discoverHost(udpPort, 2000);
 		if (host == null) {
 			stopEndPoints();
 			fail("No servers found.");
@@ -60,7 +61,7 @@ public class DiscoverHostTest extends KryoNetTestCase {
 		}
 
 		startEndPoint(client);
-		client.connect(2000, host, tcpPort);
+		client.connect(2000, host.getValue(), tcpPort);
 		client.stop();
 
 		waitForThreads();

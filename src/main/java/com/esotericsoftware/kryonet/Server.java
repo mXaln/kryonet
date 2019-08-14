@@ -67,6 +67,7 @@ public class Server implements EndPoint {
 	private final Selector selector;
 	private int emptySelects;
 	private ServerSocketChannel serverChannel;
+	private String serverName;
 	private UdpConnection udp;
 	private Connection[] connections = {};
 	private IntMap<Connection> pendingConnections = new IntMap();
@@ -154,9 +155,6 @@ public class Server implements EndPoint {
 
 		this.serialization = serialization;
 
-		this.discoveryHandler = new ServerDiscoveryHandler() {
-		};
-
 		try {
 			selector = Selector.open();
 		} catch (IOException ex) {
@@ -171,6 +169,14 @@ public class Server implements EndPoint {
 
 	public Serialization getSerialization() {
 		return serialization;
+	}
+
+	public String getServerName() {
+		return serverName;
+	}
+
+	public void setServerName(String name) {
+		serverName = name;
 	}
 
 	@Override
@@ -455,7 +461,7 @@ public class Server implements EndPoint {
 								try {
 									boolean responseSent = discoveryHandler
 											.onDiscoverHost(udp.datagramChannel,
-													fromAddress);
+													fromAddress, serverName);
 									if (DEBUG && responseSent)
 										debug("kryonet",
 												"Responded to host discovery from: "

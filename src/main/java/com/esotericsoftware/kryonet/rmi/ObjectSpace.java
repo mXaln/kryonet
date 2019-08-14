@@ -95,6 +95,12 @@ public class ObjectSpace {
 
 	private final Listener invokeListener = new Listener() {
 		@Override
+		public void connected(Connection connection) {}
+
+		@Override
+		public void idle(Connection connection) {}
+
+		@Override
 		public void received(final Connection connection, Object object) {
 			if (!(object instanceof InvokeMethod))
 				return;

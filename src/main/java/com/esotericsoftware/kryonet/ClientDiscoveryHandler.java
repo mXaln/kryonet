@@ -32,9 +32,7 @@ public interface ClientDiscoveryHandler {
 	 *
 	 * @return a new {@link DatagramPacket}
 	 */
-	public default DatagramPacket onRequestNewDatagramPacket() {
-		return new DatagramPacket(new byte[0], 0);
-	}
+	DatagramPacket onRequestNewDatagramPacket();
 
 	/**
 	 * Called when the {@link Client} discovers a host.
@@ -44,17 +42,13 @@ public interface ClientDiscoveryHandler {
 	 *            {@link #onRequestNewDatagramPacket()}, after being filled with
 	 *            the incoming packet data.
 	 */
-	public default void onDiscoveredHost(DatagramPacket datagramPacket) {
-		// does nothing by default
-	}
+	void onDiscoveredHost(DatagramPacket datagramPacket);
 
 	/**
 	 * Called right before the {@link Client#discoverHost(int, int)} or
 	 * {@link Client#discoverHosts(int, int)} method exits. This allows the
 	 * implementation to clean up any resources used, i.e. an {@link Input}.
 	 */
-	public default void onFinally() {
-		// does nothing by default
-	}
+	void onFinally();
 
 }

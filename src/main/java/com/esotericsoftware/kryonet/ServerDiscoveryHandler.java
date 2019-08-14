@@ -28,8 +28,6 @@ import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
 
 public interface ServerDiscoveryHandler {
 
-	ByteBuffer emptyBuffer = ByteBuffer.allocate(0);
-
 	/**
 	 * Called when the {@link Server} receives a {@link DiscoverHost} packet.
 	 *
@@ -41,9 +39,6 @@ public interface ServerDiscoveryHandler {
 	 *             from the use of
 	 *             {@link DatagramChannel#send(ByteBuffer, java.net.SocketAddress)}
 	 */
-	public default boolean onDiscoverHost(DatagramChannel datagramChannel,
-			InetSocketAddress fromAddress) throws IOException {
-		datagramChannel.send(emptyBuffer, fromAddress);
-		return true;
-	}
+	boolean onDiscoverHost(DatagramChannel datagramChannel,
+			InetSocketAddress fromAddress, String serverName) throws IOException;
 }

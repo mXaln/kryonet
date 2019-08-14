@@ -30,17 +30,12 @@ import static com.esotericsoftware.minlog.Log.trace;
 
 import java.io.IOException;
 import java.net.*;
-import java.nio.Buffer;
 import java.nio.ByteBuffer;
 import java.nio.channels.CancelledKeyException;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.security.AccessControlException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import com.esotericsoftware.kryo.Kryo;
 import com.esotericsoftware.kryonet.FrameworkMessage.DiscoverHost;
@@ -126,9 +121,6 @@ public class Client extends Connection implements EndPoint {
 		endPoint = this;
 
 		this.serialization = serialization;
-
-		this.discoveryHandler = new ClientDiscoveryHandler() {
-		};
 
 		initialize(serialization, writeBufferSize, objectBufferSize);
 
@@ -601,7 +593,7 @@ public class Client extends Connection implements EndPoint {
 			throws IOException {
 		ByteBuffer dataBuffer = ByteBuffer.allocate(64);
 		serialization.write(null, dataBuffer, new DiscoverHost());
-		((Buffer)dataBuffer).flip();
+		dataBuffer.flip();
 		byte[] data = new byte[dataBuffer.limit()];
 		dataBuffer.get(data);
 		for (NetworkInterface iface : Collections
@@ -628,6 +620,7 @@ public class Client extends Connection implements EndPoint {
 			debug("kryonet", "Broadcasted host discovery on port: " + udpPort);
 	}
 
+
 	/**
 	 * Broadcasts a UDP message on the LAN to discover any running servers. The
 	 * address of the first server to respond is returned.
@@ -638,14 +631,14 @@ public class Client extends Connection implements EndPoint {
 	 *            The number of milliseconds to wait for a response.
 	 * @return the first server found, or null if no server responded.
 	 */
-	public InetAddress discoverHost(int udpPort, int timeoutMillis) {
+	public Map.Entry<String, InetAddress> discoverHost(int udpPort, int timeoutMillis) {
 		DatagramSocket socket = null;
 		try {
 			socket = new DatagramSocket();
-			broadcast(udpPort, socket);
 			socket.setSoTimeout(timeoutMillis);
-			DatagramPacket packet = discoveryHandler
-					.onRequestNewDatagramPacket();
+			socket.setBroadcast(true);
+			broadcast(udpPort, socket);
+			DatagramPacket packet = discoveryHandler.onRequestNewDatagramPacket();
 			try {
 				socket.receive(packet);
 			} catch (SocketTimeoutException ex) {
@@ -656,7 +649,8 @@ public class Client extends Connection implements EndPoint {
 			if (INFO)
 				info("kryonet", "Discovered server: " + packet.getAddress());
 			discoveryHandler.onDiscoveredHost(packet);
-			return packet.getAddress();
+			String serverName = new String(packet.getData()).trim();
+			return new AbstractMap.SimpleEntry<>(serverName, packet.getAddress());
 		} catch (IOException ex) {
 			if (ERROR)
 				error("kryonet", "Host discovery failed.", ex);
@@ -676,16 +670,16 @@ public class Client extends Connection implements EndPoint {
 	 * @param timeoutMillis
 	 *            The number of milliseconds to wait for a response.
 	 */
-	public List<InetAddress> discoverHosts(int udpPort, int timeoutMillis) {
-		List<InetAddress> hosts = new ArrayList<InetAddress>();
+	public List<Map.Entry<String, InetAddress>> discoverHosts(int udpPort, int timeoutMillis) {
+		List<Map.Entry<String, InetAddress>> hosts = new ArrayList();
 		DatagramSocket socket = null;
 		try {
 			socket = new DatagramSocket();
-			broadcast(udpPort, socket);
 			socket.setSoTimeout(timeoutMillis);
+			socket.setBroadcast(true);
+			broadcast(udpPort, socket);
 			while (true) {
-				DatagramPacket packet = discoveryHandler
-						.onRequestNewDatagramPacket();
+				DatagramPacket packet = discoveryHandler.onRequestNewDatagramPacket();
 				try {
 					socket.receive(packet);
 				} catch (SocketTimeoutException ex) {
@@ -697,7 +691,9 @@ public class Client extends Connection implements EndPoint {
 					info("kryonet",
 							"Discovered server: " + packet.getAddress());
 				discoveryHandler.onDiscoveredHost(packet);
-				hosts.add(packet.getAddress());
+				String serverName = new String(packet.getData()).trim();
+
+				hosts.add(new AbstractMap.SimpleEntry<>(serverName, packet.getAddress()));
 			}
 		} catch (IOException ex) {
 			if (ERROR)
